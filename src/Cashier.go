@@ -1,8 +1,8 @@
 package main
 
 import (
-    "Assignment-3/dao"
-    "Assignment-3/dbclient"
+    "Assignment-3/src/dao"
+    "Assignment-3/src/dbclient"
 )
 
 type Cashier struct {

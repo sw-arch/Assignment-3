@@ -1,6 +1,6 @@
 package main
 
-import "Assignment-3/dao"
+import "Assignment-3/src/dao"
 
 type Cart struct {
     items     []dao.InventoryItem
