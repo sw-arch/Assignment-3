@@ -1,2 +1,2 @@
-docker build -t sw-arch-assignment-3 .
+docker build -t jacobamason/sw-arch-assignment-3 .
 

@@ -3,7 +3,7 @@ FROM golang
 WORKDIR /go/src/Assignment-3
 COPY . .
 
-RUN go-wrapper download Assignment-3/src
-RUN go-wrapper install Assignment-3/src
+RUN go-wrapper download
+RUN go-wrapper install
 
 CMD ["go-wrapper", "run"]
