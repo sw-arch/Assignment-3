@@ -24,3 +24,4 @@ func (client UserDBClient) changeAddress(user dao.User, address string) bool {
 func (client UserDBClient) changeOscCardNumber(cardNumber uint64) bool {
     return false
 }
+
