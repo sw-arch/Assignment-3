@@ -1,4 +1,4 @@
-package dbclient
+package dbClient
 
 import (
 	"Assignment-3/dao"
@@ -16,20 +16,10 @@ var purchaseDBInstance *PurchaseDBClient
 
 func GetPurchaseDBClient() *PurchaseDBClient {
 	if purchaseDBInstance == nil {
-		purchaseDBInstance = &PurchaseDBClient{initializeDB()}
+		purchaseDBInstance = &PurchaseDBClient{initializeDB("purchase.db")}
 		purchaseDBInstance.createPurchaseTable()
 	}
 	return purchaseDBInstance
-}
-
-func initializeDB() *sql.DB {
-	db, err := sql.Open("sqlite3", "purchases.db")
-	checkErr(err)
-	if db == nil {
-		panic("DB is nil!")
-	}
-
-	return db
 }
 
 func (client PurchaseDBClient) createPurchaseTable() {

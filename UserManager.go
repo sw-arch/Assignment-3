@@ -1,22 +1,22 @@
 package main
 
 import (
-    "Assignment-3/dao"
-    "Assignment-3/dbclient"
+	"Assignment-3/dao"
+	"Assignment-3/dbClient"
 )
 
 type UserManager struct {
-    userClient dbclient.UserDBClient
+	userClient dbclient.UserDBClient
 }
 
 func (manager UserManager) logIn(user dao.User, password string) bool {
-    return false
+	return false
 }
 
 func (manager UserManager) logOut(user dao.User) bool {
-    return false
+	return false
 }
 
 func (manager UserManager) getHistory(user dao.User) bool {
-    return false
+	return false
 }

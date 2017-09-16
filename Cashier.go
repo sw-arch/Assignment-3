@@ -1,19 +1,19 @@
 package main
 
 import (
-    "Assignment-3/dao"
-    "Assignment-3/dbclient"
+	"Assignment-3/dao"
+	"Assignment-3/dbClient"
 )
 
 type Cashier struct {
-    user           dao.User
-    purchaseClient dbclient.PurchaseDBClient
+	user           dao.User
+	purchaseClient dbClient.PurchaseDBClient
 }
 
 func (cashier Cashier) confirmPurchase() bool {
-    return false
+	return false
 }
 
 func (cashier Cashier) previewPurchase() dao.Purchase {
-    return dao.Purchase{}
+	return dao.Purchase{}
 }
