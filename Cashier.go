@@ -7,7 +7,7 @@ import (
 
 type Cashier struct {
 	user           dao.User
-	purchaseClient dbClient.PurchaseDBClient
+	purchaseClient dbclient.PurchaseDBClient
 }
 
 func (cashier Cashier) confirmPurchase() bool {

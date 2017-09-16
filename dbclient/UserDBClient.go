@@ -15,31 +15,17 @@ var userDBInstance *UserDBClient
 
 func GetUserDBClient() *UserDBClient {
 	if userDBInstance == nil {
-		userDBInstance = &UserDBClient{initializeDB()}
-		userDBInstance.createUserTable()
+		userDBInstance = &UserDBClient{initializeDB("users.db")}
+		createTable(userDBInstance.database, "users",
+			`id Integer primary key,
+			checkoutdate Numeric,
+			username Text,
+			Address Text, 
+			oscnum Integer,
+			total Real,
+			items Blob`)
 	}
 	return userDBInstance
-}
-
-func initializeUserDB() *sql.DB {
-	db, err := sql.Open("sqlite3", "users.db")
-	checkErr(err)
-	if db == nil {
-		panic("DB is nil!")
-	}
-
-	return db
-}
-
-func (client UserDBClient) createUserTable() {
-	checkStatement := "SELECT name FROM sqlite_master WHERE type='table' AND name='user';"
-	result, err := client.database.Exec(checkStatement)
-	checkErr(err)
-	if result == nil {
-		createStatement := "Create Table user (id Integer primary key, checkoutdate Numeric, username Text, Address Text, oscnum Integer, total Real, items Blob);"
-		_, err := client.database.Exec(createStatement)
-		checkErr(err)
-	}
 }
 
 func (client UserDBClient) getUserByUsername(username string) dao.User {
