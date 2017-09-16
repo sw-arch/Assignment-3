@@ -1,4 +1,4 @@
-package dbClient
+package dbclient
 
 import (
 	"Assignment-3/dao"

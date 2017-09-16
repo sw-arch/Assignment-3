@@ -2,7 +2,7 @@ package main
 
 import (
 	"Assignment-3/dao"
-	"Assignment-3/dbClient"
+	"Assignment-3/dbclient"
 )
 
 type UserManager struct {

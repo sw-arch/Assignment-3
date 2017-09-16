@@ -1,4 +1,4 @@
-package dbClient
+package dbclient
 
 import (
 	"database/sql"
