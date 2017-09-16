@@ -1,11 +1,13 @@
 package main
 
 import (
-	"fmt"
-	// "Assignment-3/dao"
-	// "Assignment-3/dbclient"
+    "fmt"
+    // "Assignment-3/dbclient"
 )
 
 func main() {
-	fmt.Println("Hello World")
+    for {
+        fmt.Println("1. Create User")
+        fmt.Println("2. Get User By Username")
+    }
 }

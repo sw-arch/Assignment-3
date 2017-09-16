@@ -9,7 +9,7 @@ import (
 )
 
 type PurchaseDBClient struct {
-    database *sql.DB
+    db *sql.DB
 }
 
 var purchaseDBInstance *PurchaseDBClient
@@ -17,7 +17,7 @@ var purchaseDBInstance *PurchaseDBClient
 func GetPurchaseDBClient() *PurchaseDBClient {
     if purchaseDBInstance == nil {
         purchaseDBInstance = &PurchaseDBClient{initializeDB("purchase.db")}
-        createTable(purchaseDBInstance.database, "purchase",
+        createTable(purchaseDBInstance.db, "purchase",
             `id Integer primary key,
             checkoutdate Numeric,
             username Text,

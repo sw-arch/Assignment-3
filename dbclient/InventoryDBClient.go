@@ -9,7 +9,7 @@ import (
 )
 
 type InventoryDBClient struct {
-    database *sql.DB
+    db *sql.DB
 }
 
 var inventoryDBInstance *InventoryDBClient
@@ -17,11 +17,13 @@ var inventoryDBInstance *InventoryDBClient
 func GetInventoryDBClient() *InventoryDBClient {
     if inventoryDBInstance == nil {
         inventoryDBInstance = &InventoryDBClient{initializeDB("inventory.db")}
-        createTable(inventoryDBInstance.database, "inventory",
+        createTable(inventoryDBInstance.db, "inventory",
             `inventory_id Integer primary key,
             name Text,
             description Text,
-            price Real`)
+            price Real,
+            quantity_on_hand Integer,
+            quantity_reserved Integer`)
     }
     return inventoryDBInstance
 }
