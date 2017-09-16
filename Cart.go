@@ -3,7 +3,7 @@ package main
 import "Assignment-3/dao"
 
 type Cart struct {
-    items     map[dao.InventoryItem]uint64
+    items     dao.Cart
     store     Store
 }
 
