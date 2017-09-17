@@ -1,16 +1,17 @@
 package dao
 
 import (
-    "time"
-    "github.com/satori/go.uuid"
+	"time"
+
+	"github.com/satori/go.uuid"
 )
 
-type Purchase struct{
-    Items         []InventoryItem 
-    TotalCost     float64
-    OscCardNumber uint64
-    Address       string
-    Username      string
-    CheckoutDate  time.Time
-    Id            *uuid.UUID
+type Purchase struct {
+	Id            *uuid.UUID
+	CheckoutDate  time.Time
+	Username      string
+	Address       string
+	OscCardNumber uint64
+	TotalCost     float64
+	Items         []InventoryItem
 }
