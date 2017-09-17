@@ -1,59 +1,96 @@
 package dbclient
 
 import (
-    "fmt"
-    "Assignment-3/dao"
-    "database/sql"
+	"Assignment-3/dao"
+	"database/sql"
+	"encoding/json"
 
-    _ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type UserDBClient struct {
-    db *sql.DB
+	db *sql.DB
 }
 
 var userDBInstance *UserDBClient
 
 func GetUserDBClient() *UserDBClient {
-    if userDBInstance == nil {
-        userDBInstance = &UserDBClient{initializeDB("users.db")}
-        createTable(userDBInstance.db, "users",
-            `oscnum Integer primary key,
-            username Text,
+	if userDBInstance == nil {
+		userDBInstance = &UserDBClient{initializeDB("users.db")}
+		createTable(userDBInstance.db, "users",
+			`username Text primary key,
             password Text,
+            cart Blob,
             address Text,
-            cart Blob`)
-    }
-    return userDBInstance
+            oscnum Integer`)
+	}
+	return userDBInstance
 }
 
 func (client UserDBClient) GetUserByUsername(username string) dao.User {
-    return dao.User{}
+	statement, prepErr := client.db.Prepare("SELECT * FROM users WHERE username=?;")
+	checkErr(prepErr)
+
+	row := statement.QueryRow(username)
+	var name string
+	var password string
+	var cartEncoded []byte
+	var address string
+	var oscnum uint64
+
+	err := row.Scan(&name, &password, &cartEncoded, &address, &oscnum)
+	checkErr(err)
+
+	var cart dao.Cart
+	marErr := json.Unmarshal(cartEncoded, cart)
+	checkErr(marErr)
+
+	return dao.User{username, password, cart, address, oscnum}
 }
 
 func (client UserDBClient) CreateUser(user dao.User) bool {
-    _, err := client.db.Exec(fmt.Sprintf("INSERT INTO users (oscnum, username, password, address, cart) VALUES (%s, %s, %s, %s, %s)", user.OscCardNumber, user.Username, user.Password, user.Address, user.Cart))
-    checkErr(err)
-    return true
+	cart, marshalErr := json.Marshal(user.Cart)
+	checkErr(marshalErr)
+	statement, prepErr := client.db.Prepare("INSERT INTO users (username, password, cart, address, oscnum) VALUES (?, ?, ?, ?, ?);")
+	checkErr(prepErr)
+	_, err := statement.Exec(user.Username, user.Password, cart, user.Address, user.OscCardNumber)
+	checkErr(err)
+	return true
+}
+
+func (client UserDBClient) SetCart(user dao.User) bool {
+	cart, marshalErr := json.Marshal(user.Cart)
+	checkErr(marshalErr)
+	statement, prepErr := client.db.Prepare("UPDATE users SET cart = ? WHERE username == ?;")
+	checkErr(prepErr)
+	_, err := statement.Exec(cart, user.Username)
+	checkErr(err)
+	return true
 }
 
 func (client UserDBClient) ChangePassword(user dao.User, password string) bool {
-    user.Password = password
-    _, err := client.db.Exec(fmt.Sprintf("UPDATE users SET password = %s WHERE username == %s", password, user.Username))
-    checkErr(err)
-    return true
+	user.Password = password
+	statement, prepErr := client.db.Prepare("UPDATE users SET password = ? WHERE username == ?;")
+	checkErr(prepErr)
+	_, err := statement.Exec(password, user.Username)
+	checkErr(err)
+	return true
 }
 
 func (client UserDBClient) ChangeAddress(user dao.User, address string) bool {
-    user.Address = address
-    _, err := client.db.Exec(fmt.Sprintf("UPDATE users SET address = %s WHERE username == %s", address, user.Username))
-    checkErr(err)
-    return true
+	user.Address = address
+	statement, prepErr := client.db.Prepare("UPDATE users SET address = ? WHERE username == ?;")
+	checkErr(prepErr)
+	_, err := statement.Exec(address, user.Username)
+	checkErr(err)
+	return true
 }
 
 func (client UserDBClient) ChangeOscCardNumber(user dao.User, cardNumber uint64) bool {
-    user.OscCardNumber = cardNumber
-    _, err := client.db.Exec(fmt.Sprintf("UPDATE users SET oscnum = %s WHERE username == %s", cardNumber, user.Username))
-    checkErr(err)
-    return true
+	user.OscCardNumber = cardNumber
+	statement, prepErr := client.db.Prepare("UPDATE users SET oscnum = ? WHERE username == ?;")
+	checkErr(prepErr)
+	_, err := statement.Exec(cardNumber, user.Username)
+	checkErr(err)
+	return true
 }
