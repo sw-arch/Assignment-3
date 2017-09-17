@@ -37,11 +37,11 @@ func (client InventoryDBClient) GetItemByID(id uuid.UUID) dao.InventoryItem {
 	var name string
 	var description string
 	var price float64
-	var quantity_on_hand int
-	var quantity_reserved int
-	err := row.Scan(&uUID, &name, &description, &price, &quantity_on_hand, &quantity_reserved)
+	var quantityOnHand int
+	var quantityReserved int
+	err := row.Scan(&uUID, &name, &description, &price, &quantityOnHand, &quantityReserved)
 	checkErr(err)
-	return dao.InventoryItem{&id, name, description, price, quantity_on_hand}
+	return dao.InventoryItem{&id, name, description, price, quantityOnHand}
 }
 
 func (client InventoryDBClient) SetItemQuantity(itemId uuid.UUID, quantity uint64) bool {

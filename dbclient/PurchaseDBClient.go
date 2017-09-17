@@ -4,7 +4,6 @@ import (
 	"Assignment-3/dao"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -33,7 +32,10 @@ func GetPurchaseDBClient() *PurchaseDBClient {
 }
 
 func (client PurchaseDBClient) GetPurchaseByID(id uuid.UUID) dao.Purchase {
-	row := client.db.QueryRow(fmt.Sprintf("SELECT * FROM purchase WHERE id=%s;", id))
+	statement, prepErr := client.db.Prepare("SELECT * FROM purchase WHERE id=?;")
+	checkErr(prepErr)
+
+	row := statement.QueryRow(id)
 	var uUID uuid.UUID
 	var checkoutDate time.Time
 	var username string
@@ -54,8 +56,10 @@ func (client PurchaseDBClient) GetPurchaseByID(id uuid.UUID) dao.Purchase {
 func (client PurchaseDBClient) AddPurchase(purchase dao.Purchase) bool {
 	items, marErr := json.Marshal(purchase.Items)
 	checkErr(marErr)
-	_, err := client.db.Exec(fmt.Sprintf("INSERT INTO purchase (id, checkoutdate, username, address, oscnum, total, items) VALUES (%s, %s, %s, %s, %d, %f, %s);",
-		purchase.Id, purchase.CheckoutDate, purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, items))
+	statement, prepErr := client.db.Prepare("INSERT INTO purchase (id, checkoutdate, username, address, oscnum, total, items) VALUES (?, ?, ?, ?, ?, ?, ?);")
+	checkErr(prepErr)
+
+	_, err := statement.Exec(purchase.Id, purchase.CheckoutDate, purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, items)
 	checkErr(err)
 	return true
 }
