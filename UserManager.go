@@ -6,17 +6,17 @@ import (
 )
 
 type UserManager struct {
-	userClient dbclient.UserDBClient
-    purchaseClient dbclient.PurchaseDBClient
+	userClient     dbclient.UserDBClient
+	purchaseClient dbclient.PurchaseDBClient
 }
 
 func (manager UserManager) logIn(username string, password string) (dao.User, bool) {
-    user := manager.userClient.GetUserByUsername(username)
+	user := manager.userClient.GetUserByUsername(username)
 	if user.Password == password {
-        return user, true
-    } else {
-        return dao.User{}, false
-    }
+		return user, true
+	} else {
+		return dao.User{}, false
+	}
 }
 
 func (manager UserManager) logOut(user dao.User) bool {
