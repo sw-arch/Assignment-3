@@ -29,6 +29,27 @@ func GetInventoryDBClient() *InventoryDBClient {
 	return inventoryDBInstance
 }
 
+func (client InventoryDBClient) GetAllItems() []dao.InventoryItem {
+	statement, prepErr := client.db.Prepare("SELECT * FROM inventory;")
+	checkErr(prepErr)
+
+	rows, queryErr := statement.Query()
+	checkErr(queryErr)
+	defer rows.Close()
+
+	var items []dao.InventoryItem
+	for rows.Next() {
+		newItem := dao.InventoryItem{}
+		var quantityReserved int
+		rowErr := rows.Scan(newItem.Id, newItem.Name, newItem.Description, newItem.Category, newItem.Price, newItem.QuantityAvailable, quantityReserved)
+		checkErr(rowErr)
+
+		items = append(items, newItem)
+	}
+
+	return items
+}
+
 func (client InventoryDBClient) GetItemByID(id uuid.UUID) dao.InventoryItem {
 	statement, prepErr := client.db.Prepare("SELECT * FROM inventory WHERE inventory_id=?;")
 	checkErr(prepErr)
