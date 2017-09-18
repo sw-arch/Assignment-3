@@ -6,6 +6,7 @@ type InventoryItem struct {
 	Id                *uuid.UUID
 	Name              string
 	Description       string
+	Category          string
 	Price             float64
 	QuantityAvailable int
 }
