@@ -1,0 +1,59 @@
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("1d0109ef-ee42-4d0c-ae07-ebceee3e71b5", "Crest toothbrush 2 pack", "two Crest brand toothbrushes", "household items", 4.99, 37, 2);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("76bb95be-3513-4009-8999-f54d1d8d9e64", "Batman action figure", "8 inch plastic Batman action figure", "toys", 9.99, 15, 8);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("fd0b65bd-db16-46a6-971b-47391aef712f", "Canon camera", "10 megapixel Canon camera", "small electronics", 99.99, 11, 7);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("2a8796db-f864-4e91-9527-7e0dae2d7509", "Raven's Gate", "novel by Anthony Horowitz", "books", 14.99, 29, 3);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("2a4f8e1b-cb3e-4be4-bfd0-98e8cd506a4d", "Pride and Prejudice", "novel by Jane Austen", "books", 20.00, 44, 10);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("a92357c1-71c9-49ff-88b2-dc156050d560", "Perplexus", "nolling ball obstacle course puzzle game", "toys", 19.99, 27, 6);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("e88a800b-4e7f-47ec-acf7-20b9211400b2", "Motorolla Droid Maxx", "nmartphone from Motorolla", "small electronics", 149.99, 35, 9);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("552cdcbe-7cc5-4e5b-a510-6a12f436ce4f", "Softsoap", "noftsoap brand anti-bacterial gel handsoap", "household items", 2.99, 62, 15);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("552cdcbe-7cc5-4e5b-a510-6a12f436ce4f", "Charlie and the Chocolate Factory", "children's story by Roald Dahl", "books", 9.99, 24, 4);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("181cf375-3a96-401d-8796-ed3b529ed365", "The Lord of the Rings: Extended Edition", "DVD set of the extended motion picture adaptations of Tolkien's The Lord of the Rings", "small electronics", 59.99, 28, 6);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("0fd74aa2-5a8f-4eba-9496-a554c57ea90d", "Star Wars: The Original Trilogy", "DVD set of Episodes IV, V, and VI of Star Wars", "small electronics", 29.99, 40, 11);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("acb4ddd5-94e3-44b6-838c-02cec26ba3b6", "Bounty paper towels", "package of eight rolls of Bounty brand paper towels", "household items", 14.99, 76, 34);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("1cb0d7a4-23e0-4795-b9fe-0626d308790e", "Nintendo Switch", "handheld/home hybrid gaming console from Nintendo", "small electronics", 299.99, 1, 1);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("1a22b866-8665-4ca0-9449-603ff8814527", "Playstation 4", "home gaming console from Sony", "small electronics", 299.99, 50, 12);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("2a988ea6-f0f8-4aec-b956-81c997c5d334", "Curtain set", "beige living room curtains", "household items", 19.99, 36, 14);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("2ffe9659-a8c4-4e70-b66b-e546805cdc5d", "The Lord of the Rings: The Fellowship of the Ring", "classic novel by J.R.R. Tolkien", "books", 13.99, 48, 17);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("cb99ef8a-c3cb-4615-bafa-8fbe5f232e18", "F-16 diecast model", "diecast metal F-16 model my Model Power", "toys", 9.99, 12, 7);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("be857d16-553f-407d-b70c-c9894cde32f3", "Dish drainer", "drainer for holding wet dishes", "household items", 14.99, 13, 1);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("68b9ae46-87ae-4953-b56f-f5fc0c9edc78", "Darth Vader action figure", "7 inch action figure of Darth Vader", "toys", 9.99, 5, 0);
+
+INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("6cb32dd9-2063-4431-bf5e-28483dc98d2e", "No Country for Old Men", "novel by Cormac McCarthy", "books", 12.99, 42, 12);
