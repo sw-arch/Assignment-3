@@ -2,6 +2,7 @@ package dbclient
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -25,9 +26,7 @@ func createTable(db *sql.DB, tableName string, schema string) {
 	selectErr := selectStatement.QueryRow(tableName).Scan(&name)
 
 	if selectErr == sql.ErrNoRows {
-		createStatement, prepCreateErr := db.Prepare("CREATE TABLE ? (?)")
-		checkErr(prepCreateErr)
-		_, createErr := createStatement.Exec(tableName, schema)
+		_, createErr := db.Exec(fmt.Sprintf("CREATE TABLE %s (%s)", tableName, schema))
 		checkErr(createErr)
 	}
 }

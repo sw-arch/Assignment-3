@@ -22,30 +22,49 @@ func GetUserDBClient() *UserDBClient {
             password Text,
             cart Blob,
             address Text,
-            oscnum Integer`)
+            oscnum Integer unique`)
 	}
 	return userDBInstance
 }
 
-func (client UserDBClient) GetUserByUsername(username string) dao.User {
-	statement, prepErr := client.db.Prepare("SELECT * FROM users WHERE username=?;")
+func (client UserDBClient) GetUserByUsername(username string) (dao.User, bool) {
+	statement, prepErr := client.db.Prepare("SELECT * FROM users WHERE username=?")
 	checkErr(prepErr)
 
-	row := statement.QueryRow(username)
-	var name string
-	var password string
+	var user dao.User
 	var cartEncoded []byte
-	var address string
-	var oscnum uint64
-
-	err := row.Scan(&name, &password, &cartEncoded, &address, &oscnum)
-	checkErr(err)
+	err := statement.QueryRow(username).Scan(user.Username, user.Password, cartEncoded, user.Address, user.OscCardNumber)
+	if err == sql.ErrNoRows {
+		return dao.User{}, false
+	}
 
 	var cart dao.Cart
-	marErr := json.Unmarshal(cartEncoded, cart)
+	marErr := json.Unmarshal(cartEncoded, &cart)
 	checkErr(marErr)
 
-	return dao.User{username, password, cart, address, oscnum}
+	user.Cart = cart
+
+	return user, true
+}
+
+func (client UserDBClient) GetUserByOSCNumber(oscnum uint64) (dao.User, bool) {
+	statement, prepErr := client.db.Prepare("SELECT * FROM users WHERE oscnum=?")
+	checkErr(prepErr)
+
+	var user dao.User
+	var cartEncoded []byte
+	err := statement.QueryRow(oscnum).Scan(user.Username, user.Password, cartEncoded, user.Address, user.OscCardNumber)
+	if err == sql.ErrNoRows {
+		return dao.User{}, false
+	}
+
+	var cart dao.Cart
+	marErr := json.Unmarshal(cartEncoded, &cart)
+	checkErr(marErr)
+
+	user.Cart = cart
+
+	return user, true
 }
 
 func (client UserDBClient) CreateUser(user dao.User) bool {

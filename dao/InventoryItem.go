@@ -3,7 +3,7 @@ package dao
 import "github.com/satori/go.uuid"
 
 type InventoryItem struct {
-	Id                *uuid.UUID
+	Id                uuid.UUID
 	Name              string
 	Description       string
 	Category          string
