@@ -4,6 +4,7 @@ import (
 	"Assignment-3/dao"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -33,7 +34,7 @@ func (client UserDBClient) GetUserByUsername(username string) (dao.User, bool) {
 
 	var user dao.User
 	var cartEncoded []byte
-	err := statement.QueryRow(username).Scan(user.Username, user.Password, cartEncoded, user.Address, user.OscCardNumber)
+	err := statement.QueryRow(username).Scan(&user.Username, &user.Password, &cartEncoded, &user.Address, &user.OscCardNumber)
 	if err == sql.ErrNoRows {
 		return dao.User{}, false
 	}
@@ -44,6 +45,7 @@ func (client UserDBClient) GetUserByUsername(username string) (dao.User, bool) {
 
 	user.Cart = cart
 
+	fmt.Printf("Found user '%s' with osc number %d with cart %s\n", user.Username, user.OscCardNumber, cartEncoded)
 	return user, true
 }
 
@@ -53,7 +55,7 @@ func (client UserDBClient) GetUserByOSCNumber(oscnum uint64) (dao.User, bool) {
 
 	var user dao.User
 	var cartEncoded []byte
-	err := statement.QueryRow(oscnum).Scan(user.Username, user.Password, cartEncoded, user.Address, user.OscCardNumber)
+	err := statement.QueryRow(oscnum).Scan(&user.Username, &user.Password, &cartEncoded, &user.Address, &user.OscCardNumber)
 	if err == sql.ErrNoRows {
 		return dao.User{}, false
 	}
@@ -64,6 +66,7 @@ func (client UserDBClient) GetUserByOSCNumber(oscnum uint64) (dao.User, bool) {
 
 	user.Cart = cart
 
+	fmt.Printf("found user %s with osc number %d with cart %s\n", user.Username, user.OscCardNumber, cartEncoded)
 	return user, true
 }
 
