@@ -100,7 +100,7 @@ func (client InventoryDBClient) Release(item dao.InventoryItem, quantity uint64)
 }
 
 func (client InventoryDBClient) Remove(item dao.InventoryItem, quantity uint64) bool {
-	statement, prepErr := client.db.Prepare("UPDATE inventory SET quantity_on_hand=quantity_on_hand - ? where inventory_id=?;")
+	statement, prepErr := client.db.Prepare("UPDATE inventory SET quantity_on_hand=quantity_on_hand - ?, quantity_reserved=quantity_reserved - ? where inventory_id=?;")
 	checkErr(prepErr)
 
 	res, execErr := statement.Exec(quantity, item.Id.String())
