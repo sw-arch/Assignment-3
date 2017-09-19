@@ -3,6 +3,7 @@ package dbclient
 import (
 	"Assignment-3/dao"
 	"database/sql"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/satori/go.uuid"
@@ -30,10 +31,29 @@ func GetInventoryDBClient() *InventoryDBClient {
 }
 
 func (client InventoryDBClient) GetAllItems() []dao.InventoryItem {
-	statement, prepErr := client.db.Prepare("SELECT * FROM inventory;")
+	rows, err := client.db.Query("SELECT * FROM inventory;")
+	checkErr(err)
+	defer rows.Close()
+
+	var items []dao.InventoryItem
+	for rows.Next() {
+		newItem := dao.InventoryItem{}
+		var quantityReserved int
+		rowErr := rows.Scan(&newItem.Id, &newItem.Name, &newItem.Description, &newItem.Category, &newItem.Price, &newItem.QuantityAvailable, &quantityReserved)
+		checkErr(rowErr)
+
+		items = append(items, newItem)
+	}
+
+	return items
+}
+
+func (client InventoryDBClient) GetItemsByCategory(category string) []dao.InventoryItem {
+	fmt.Println("getting items in category " + category)
+	statement, prepErr := client.db.Prepare("SELECT * FROM inventory WHERE category=?")
 	checkErr(prepErr)
 
-	rows, queryErr := statement.Query()
+	rows, queryErr := statement.Query(category)
 	checkErr(queryErr)
 	defer rows.Close()
 
@@ -41,7 +61,7 @@ func (client InventoryDBClient) GetAllItems() []dao.InventoryItem {
 	for rows.Next() {
 		newItem := dao.InventoryItem{}
 		var quantityReserved int
-		rowErr := rows.Scan(newItem.Id, newItem.Name, newItem.Description, newItem.Category, newItem.Price, newItem.QuantityAvailable, quantityReserved)
+		rowErr := rows.Scan(&newItem.Id, &newItem.Name, &newItem.Description, &newItem.Category, &newItem.Price, &newItem.QuantityAvailable, &quantityReserved)
 		checkErr(rowErr)
 
 		items = append(items, newItem)
@@ -117,4 +137,21 @@ func (client InventoryDBClient) Remove(item dao.InventoryItem, quantity uint64) 
 	checkErr(err)
 
 	return rowCount != 0
+}
+
+func (client InventoryDBClient) GetAvailableCategories() []string {
+	var categories []string
+
+	rows, err := client.db.Query("SELECT category FROM inventory")
+	checkErr(err)
+	defer rows.Close()
+
+	for rows.Next() {
+		var category string
+		err = rows.Scan(&category)
+		checkErr(err)
+		categories = append(categories, category)
+	}
+
+	return categories
 }

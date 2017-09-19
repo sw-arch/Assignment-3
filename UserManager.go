@@ -9,24 +9,17 @@ import (
 type UserManager struct {
 	userClient     *dbclient.UserDBClient
 	purchaseClient *dbclient.PurchaseDBClient
-	user           dao.User
-}
-
-func GetUserManager() *UserManager {
-	return &UserManager{
-		dbclient.GetUserDBClient(),
-		dbclient.GetPurchaseDBClient(),
-		dao.User{}}
+	user           *dao.User
 }
 
 func (manager UserManager) logIn(username string, password string) bool {
 	var success bool
-	manager.user, success = manager.userClient.GetUserByUsername(username)
+	*manager.user, success = manager.userClient.GetUserByUsername(username)
 	return success && manager.user.Password == password
 }
 
 func (manager UserManager) logOut(user dao.User) {
-	manager.user = dao.User{}
+	*manager.user = dao.User{}
 	return
 }
 
@@ -51,7 +44,7 @@ func (manager UserManager) register(username string, password string, address st
 	created := manager.userClient.CreateUser(user)
 
 	if created {
-		manager.user = user
+		*manager.user = user
 	}
 
 	return created
