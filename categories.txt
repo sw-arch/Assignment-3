@@ -1,0 +1,16 @@
+CREATE TABLE categories (
+    identifier varchar(10),
+    description varchar(255) 
+);
+
+INSERT INTO categories (identifier, description)
+VALUES ("books", "Books: includes paperbacks and hardbacks");
+
+INSERT INTO categories (identifier, description)
+VALUES ("toys", "Toys: action figures, games, etc.");
+
+INSERT INTO categories (identifier, description)
+VALUES ("house", "Household items: Soaps, towel, dishes, etc.");
+
+INSERT INTO categories (identifier, description)
+VALUES ("elec", "Small electronics: phones, cameras, tablets, game systems, etc.");
