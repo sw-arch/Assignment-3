@@ -18,17 +18,17 @@ func GetInventoryDBClient() *InventoryDBClient {
 	if inventoryDBInstance == nil {
 		inventoryDBInstance = &InventoryDBClient{initializeDB("inventory.db")}
 		createTable(inventoryDBInstance.db, "categories",
-			`identifier Text primary key,
+			`identifier Text PRIMARY KEY,
 			description Text`)
 		createTable(inventoryDBInstance.db, "inventory",
-			`inventory_id Text primary key,
+			`inventory_id Text PRIMARY KEY,
             name Text,
 			description Text,
 			category Text,
             price Real,
             quantity_on_hand Integer,
 			quantity_reserved Integer,
-				Foreign Key (category) References categories(identifier)`)
+			FOREIGN KEY (category) REFERENCES categories(identifier)`)
 	}
 	return inventoryDBInstance
 }

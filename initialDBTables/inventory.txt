@@ -1,3 +1,39 @@
+-- Table Creation
+
+CREATE TABLE categories (
+    identifier varchar(10) PRIMARY KEY,
+    description varchar(255) 
+);
+
+CREATE TABLE inventory (
+    inventory_id Text PRIMARY KEY,
+    name Text,
+    description Text,
+    category Text,
+    price Real,
+    quantity_on_hand Integer,
+    quantity_reserved Integer,
+    FOREIGN KEY(category) REFERENCES categories(identifier)
+);
+
+
+-- Categories
+
+INSERT INTO categories (identifier, description)
+VALUES ("books", "Books: includes paperbacks and hardbacks");
+
+INSERT INTO categories (identifier, description)
+VALUES ("toys", "Toys: action figures, games, etc.");
+
+INSERT INTO categories (identifier, description)
+VALUES ("house", "Household items: Soaps, towel, dishes, etc.");
+
+INSERT INTO categories (identifier, description)
+VALUES ("elec", "Small electronics: phones, cameras, tablets, game systems, etc.");
+
+
+-- Inventory Items
+
 INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
 VALUES ("1d0109ef-ee42-4d0c-ae07-ebceee3e71b5", "Crest toothbrush 2 pack", "two Crest brand toothbrushes", "house", 4.99, 37, 2);
 

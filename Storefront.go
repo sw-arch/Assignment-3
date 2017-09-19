@@ -167,7 +167,7 @@ func addPurchaseHistoryToShell(shell *ishell.Shell) {
 		Name: "purchases",
 		Help: "View purchase history",
 		Func: func(c *ishell.Context) {
-			purchases := dbclient.GetPurchaseDBClient().GetPurchasesByUsername(GetUserManager().user.Username)
+			// purchases := dbclient.GetPurchaseDBClient().GetPurchasesByUsername(GetUserManager().user.Username)
 			var buffer bytes.Buffer
 
 			c.ShowPaged(buffer.String())
