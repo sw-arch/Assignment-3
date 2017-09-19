@@ -9,7 +9,7 @@ type CartItem struct {
 	Quantity uint64
 }
 
-func (cart Cart) AddItem(item InventoryItem, quantity uint64) {
+func (cart *Cart) AddItem(item InventoryItem, quantity uint64) {
 	for i, cartItem := range cart.Items {
 		if cartItem.Item == item {
 			cart.Items[i].Quantity += quantity
@@ -21,7 +21,7 @@ func (cart Cart) AddItem(item InventoryItem, quantity uint64) {
 	return
 }
 
-func (cart Cart) RemoveItem(item InventoryItem, quantity uint64) {
+func (cart *Cart) RemoveItem(item InventoryItem, quantity uint64) {
 	var foundItem *CartItem
 	var foundIndex int
 	for i, cartItem := range cart.Items {
@@ -38,7 +38,7 @@ func (cart Cart) RemoveItem(item InventoryItem, quantity uint64) {
 	}
 }
 
-func (cart Cart) GetItems() []InventoryItem {
+func (cart *Cart) GetItems() []InventoryItem {
 	var totalQuantity uint64
 	for _, item := range cart.Items {
 		totalQuantity += item.Quantity
@@ -55,15 +55,15 @@ func (cart Cart) GetItems() []InventoryItem {
 	return items
 }
 
-func (cart Cart) EmptyCart() {
+func (cart *Cart) EmptyCart() {
 	cart.Items = []CartItem{}
 }
 
-func (cart Cart) Checkout() {
+func (cart *Cart) Checkout() {
 	// might need a redesign here
 }
 
-func (cart Cart) GetTotalCost() float64 {
+func (cart *Cart) GetTotalCost() float64 {
 	var totalCost float64 = 0.0
 	for _, item := range cart.Items {
 		totalCost += item.Item.Price * float64(item.Quantity)

@@ -30,6 +30,8 @@ func main() {
 
 	addListItemsToShell(storeShell)
 	addAddItemToCartToShell(storeShell)
+	addDisplayCartToShell(storeShell)
+	addWhoamiToShell(storeShell)
 
 	loginShell.Run()
 

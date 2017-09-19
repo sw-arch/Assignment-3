@@ -43,7 +43,7 @@ func (client UserDBClient) GetUserByUsername(username string) (dao.User, bool) {
 	marErr := json.Unmarshal(cartEncoded, &cart)
 	checkErr(marErr)
 
-	user.Cart = cart
+	user.PersonalCart = &cart
 
 	fmt.Printf("Found user '%s' with osc number %d with cart %s\n", user.Username, user.OscCardNumber, cartEncoded)
 	return user, true
@@ -64,14 +64,14 @@ func (client UserDBClient) GetUserByOSCNumber(oscnum uint64) (dao.User, bool) {
 	marErr := json.Unmarshal(cartEncoded, &cart)
 	checkErr(marErr)
 
-	user.Cart = cart
+	user.PersonalCart = &cart
 
 	fmt.Printf("found user %s with osc number %d with cart %s\n", user.Username, user.OscCardNumber, cartEncoded)
 	return user, true
 }
 
 func (client UserDBClient) CreateUser(user dao.User) bool {
-	cart, marshalErr := json.Marshal(user.Cart)
+	cart, marshalErr := json.Marshal(user.PersonalCart)
 	checkErr(marshalErr)
 	statement, prepErr := client.db.Prepare("INSERT INTO users (username, password, cart, address, oscnum) VALUES (?, ?, ?, ?, ?);")
 	checkErr(prepErr)
@@ -81,7 +81,7 @@ func (client UserDBClient) CreateUser(user dao.User) bool {
 }
 
 func (client UserDBClient) SetCart(user dao.User) bool {
-	cart, marshalErr := json.Marshal(user.Cart)
+	cart, marshalErr := json.Marshal(user.PersonalCart)
 	checkErr(marshalErr)
 	statement, prepErr := client.db.Prepare("UPDATE users SET cart = ? WHERE username == ?;")
 	checkErr(prepErr)

@@ -38,7 +38,7 @@ func (manager UserManager) register(username string, password string, address st
 	user := dao.User{
 		username,
 		password,
-		dao.Cart{},
+		&dao.Cart{},
 		address,
 		cardNumber}
 	created := manager.userClient.CreateUser(user)
