@@ -126,15 +126,8 @@ func addDisplayCartToShell(shell *ishell.Shell) {
 		Name: "show",
 		Help: "show items in the cart",
 		Func: func(c *ishell.Context) {
-
 			w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
-
-			fmt.Fprintln(w, "Item\tQuantity\tCost Each\t")
-			for _, cartItem := range GetUserManager().user.PersonalCart.Items {
-				fmt.Fprintf(w, " %s\t%d\t%.2f\t\n", cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price)
-			}
-			fmt.Fprintln(w, "\t\t\t")
-			fmt.Fprintf(w, " \tTotal Cost:\t%.2f\t\n", GetUserManager().user.PersonalCart.GetTotalCost())
+			fmt.Fprint(w, displayCart(GetUserManager().user.PersonalCart))
 			w.Flush()
 		},
 	}
@@ -147,10 +140,15 @@ func addCheckoutToShell(shell *ishell.Shell) {
 		Name: "checkout",
 		Help: "Proceed to checkout your stuffs",
 		Func: func(c *ishell.Context) {
+			user := GetUserManager().user
 			// preview cart
-
+			w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
+			fmt.Fprint(w, displayCart(user.PersonalCart))
+			w.Flush()
 			// show address and osc number
-
+			fmt.Fprintf(w, "Address:\t%s\n", user.Address)
+			fmt.Fprintf(w, "OSC Card:\t%d\n", user.OscCardNumber)
+			w.Flush()
 			// offer to change address
 
 			// confirm order
@@ -168,9 +166,18 @@ func addPurchaseHistoryToShell(shell *ishell.Shell) {
 		Help: "View purchase history",
 		Func: func(c *ishell.Context) {
 			purchases := dbclient.GetPurchaseDBClient().GetPurchasesByUsername(GetUserManager().user.Username)
-			var buffer bytes.Buffer
+			buf := bytes.NewBufferString("")
+			w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
 
-			c.ShowPaged(buffer.String())
+			for p := 0; p < len(purchases); p++ {
+				fmt.Fprintf(w, "Purchase:\t%s\n", purchases[p].Id.String())
+				fmt.Fprintf(w, "Address:\t%s\n", purchases[p].Address)
+				fmt.Fprintf(w, "Date:\t%s\n", purchases[p].CheckoutDate.String())
+				fmt.Fprintf(w, "OSC Card:\t%d\n", purchases[p].OscCardNumber)
+				fmt.Fprint(w, "Cart:\n")
+				fmt.Fprintf(w, displayCart(&purchases[p].Cart))
+			}
+			c.ShowPaged(buf.String())
 		},
 	}
 
@@ -190,4 +197,14 @@ func addWhoamiToShell(shell *ishell.Shell) {
 	}
 
 	shell.AddCmd(whoamiCmd)
+}
+
+func displayCart(cart *dao.Cart) string {
+	display := fmt.Sprintln("Item\tQuantity\tCost Each\t")
+	for _, cartItem := range cart.Items {
+		display += fmt.Sprintf(" %s\t%d\t%.2f\t\n", cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price)
+	}
+	display += fmt.Sprintln("\t\t\t")
+	display += fmt.Sprintf(" \tTotal Cost:\t%.2f\t\n", cart.GetTotalCost())
+	return display
 }
