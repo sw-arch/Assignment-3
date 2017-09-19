@@ -30,12 +30,13 @@ func main() {
 
 	addListItemsToShell(storeShell)
 	addAddItemToCartToShell(storeShell)
+	addRemoveItemFromCartToShell(storeShell)
 	addDisplayCartToShell(storeShell)
 	addWhoamiToShell(storeShell)
 
 	loginShell.Run()
 
-	if userManagerInstance.user != nil {
+	if userManagerInstance != nil && userManagerInstance.user != nil {
 		// user managed to log in successfully. Start the store shell.
 		storeShell.Run()
 	}

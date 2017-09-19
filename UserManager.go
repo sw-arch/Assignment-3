@@ -41,7 +41,7 @@ func (manager UserManager) register(username string, password string, address st
 		&dao.Cart{},
 		address,
 		cardNumber}
-	created := manager.userClient.CreateUser(user)
+	created := manager.userClient.CreateUser(&user)
 
 	if created {
 		*manager.user = user

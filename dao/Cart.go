@@ -11,7 +11,7 @@ type CartItem struct {
 
 func (cart *Cart) AddItem(item InventoryItem, quantity uint64) {
 	for i, cartItem := range cart.Items {
-		if cartItem.Item == item {
+		if cartItem.Item.Id == item.Id && cartItem.Item.Price == item.Price {
 			cart.Items[i].Quantity += quantity
 			return
 		}

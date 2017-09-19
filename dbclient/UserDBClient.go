@@ -70,7 +70,7 @@ func (client UserDBClient) GetUserByOSCNumber(oscnum uint64) (dao.User, bool) {
 	return user, true
 }
 
-func (client UserDBClient) CreateUser(user dao.User) bool {
+func (client UserDBClient) CreateUser(user *dao.User) bool {
 	cart, marshalErr := json.Marshal(user.PersonalCart)
 	checkErr(marshalErr)
 	statement, prepErr := client.db.Prepare("INSERT INTO users (username, password, cart, address, oscnum) VALUES (?, ?, ?, ?, ?);")
@@ -80,7 +80,7 @@ func (client UserDBClient) CreateUser(user dao.User) bool {
 	return true
 }
 
-func (client UserDBClient) SetCart(user dao.User) bool {
+func (client UserDBClient) SetCart(user *dao.User) bool {
 	cart, marshalErr := json.Marshal(user.PersonalCart)
 	checkErr(marshalErr)
 	statement, prepErr := client.db.Prepare("UPDATE users SET cart = ? WHERE username == ?;")
@@ -90,7 +90,7 @@ func (client UserDBClient) SetCart(user dao.User) bool {
 	return true
 }
 
-func (client UserDBClient) ChangePassword(user dao.User, password string) bool {
+func (client UserDBClient) ChangePassword(user *dao.User, password string) bool {
 	user.Password = password
 	statement, prepErr := client.db.Prepare("UPDATE users SET password = ? WHERE username == ?;")
 	checkErr(prepErr)
@@ -99,7 +99,7 @@ func (client UserDBClient) ChangePassword(user dao.User, password string) bool {
 	return true
 }
 
-func (client UserDBClient) ChangeAddress(user dao.User, address string) bool {
+func (client UserDBClient) ChangeAddress(user *dao.User, address string) bool {
 	user.Address = address
 	statement, prepErr := client.db.Prepare("UPDATE users SET address = ? WHERE username == ?;")
 	checkErr(prepErr)
@@ -108,7 +108,7 @@ func (client UserDBClient) ChangeAddress(user dao.User, address string) bool {
 	return true
 }
 
-func (client UserDBClient) ChangeOscCardNumber(user dao.User, cardNumber uint64) bool {
+func (client UserDBClient) ChangeOscCardNumber(user *dao.User, cardNumber uint64) bool {
 	user.OscCardNumber = cardNumber
 	statement, prepErr := client.db.Prepare("UPDATE users SET oscnum = ? WHERE username == ?;")
 	checkErr(prepErr)
