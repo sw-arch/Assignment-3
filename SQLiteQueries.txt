@@ -17,13 +17,13 @@ INSERT INTO inventory (inventory_id, name, description, category, price, quantit
 VALUES ("a92357c1-71c9-49ff-88b2-dc156050d560", "Perplexus", "nolling ball obstacle course puzzle game", "toys", 19.99, 27, 6);
 
 INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
-VALUES ("e88a800b-4e7f-47ec-acf7-20b9211400b2", "Motorolla Droid Maxx", "nmartphone from Motorolla", "small electronics", 149.99, 35, 9);
+VALUES ("e88a800b-4e7f-47ec-acf7-20b9211400b2", "Motorolla Droid Maxx", "smartphone from Motorolla", "small electronics", 149.99, 35, 9);
 
 INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
-VALUES ("552cdcbe-7cc5-4e5b-a510-6a12f436ce4f", "Softsoap", "noftsoap brand anti-bacterial gel handsoap", "household items", 2.99, 62, 15);
+VALUES ("552cdcbe-7cc5-4e5b-a510-6a12f436ce4f", "Softsoap", "softsoap brand anti-bacterial gel handsoap", "household items", 2.99, 62, 15);
 
 INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
-VALUES ("552cdcbe-7cc5-4e5b-a510-6a12f436ce4f", "Charlie and the Chocolate Factory", "children's story by Roald Dahl", "books", 9.99, 24, 4);
+VALUES ("ca19f494-a4bb-40f3-b5f9-ec07509ac9ec", "Charlie and the Chocolate Factory", "children's story by Roald Dahl", "books", 9.99, 24, 4);
 
 INSERT INTO inventory (inventory_id, name, description, category, price, quantity_on_hand, quantity_reserved)
 VALUES ("181cf375-3a96-401d-8796-ed3b529ed365", "The Lord of the Rings: Extended Edition", "DVD set of the extended motion picture adaptations of Tolkien's The Lord of the Rings", "small electronics", 59.99, 28, 6);
