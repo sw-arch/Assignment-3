@@ -86,9 +86,14 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 		Name: "remove",
 		Help: "remove items from the cart",
 		Func: func(c *ishell.Context) {
+			user := GetUserManager().user
+			if len(user.PersonalCart.Items) == 0 {
+				c.Println("Cart is currently empty!")
+				return
+			}
 			var itemsToRemove []dao.CartItem
 
-			items := GetUserManager().user.PersonalCart.Items
+			items := user.PersonalCart.Items
 			var itemTexts []string
 			for _, item := range items {
 				itemTexts = append(itemTexts, item.Item.Name)
@@ -108,7 +113,7 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 					for {
 						if err == nil && quantityToRemove > 0 && uint64(quantityToRemove) <= item.Quantity {
 							dbclient.GetInventoryDBClient().Release(item.Item, uint64(quantityToRemove))
-							GetUserManager().user.PersonalCart.RemoveItem(item.Item, uint64(quantityToRemove))
+							user.PersonalCart.RemoveItem(item.Item, uint64(quantityToRemove))
 							dbclient.GetUserDBClient().SetCart(GetUserManager().user)
 							break
 						} else {
@@ -144,60 +149,62 @@ func addCheckoutToShell(shell *ishell.Shell) {
 		Help: "Proceed to checkout your stuffs",
 		Func: func(c *ishell.Context) {
 			user := GetUserManager().user
-			if len(user.PersonalCart.Items) > 0 {
-				// preview cart
-				buf := bytes.NewBufferString("")
-				w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
-				fmt.Fprint(w, "Cart:\t\t\t\n")
-				fmt.Fprint(w, displayCart(user.PersonalCart))
-				fmt.Fprint(w, "\t\t\t\n")
-				// show address and osc number
-				fmt.Fprintf(w, "OSC Card:\t\t%d\t\n", user.OscCardNumber)
-				fmt.Fprintf(w, "Address:\t\t%s\t\n", user.Address)
-				fmt.Fprint(w, "\t\t\t\n")
-				fmt.Fprint(w, "Would you like to change your address?")
-				w.Flush()
-				// offer to change address
-				changeAddress := c.MultiChoice([]string{"No", "Yes"}, buf.String())
-				if changeAddress == 1 {
-				enterAddress:
-					c.Print("Enter New Address: ")
-					newAddress := c.ReadLine()
-					c.Printf("Address:\t%s", newAddress)
-					correctAddress := c.MultiChoice([]string{"Yes", "No"}, "Is this address correct?")
-					if correctAddress == 1 {
-						goto enterAddress
-					}
-					user.Address = newAddress
-					dbclient.GetUserDBClient().ChangeAddress(user, newAddress)
-				}
-				c.ReadLine()
-				// confirm order
-				buf = bytes.NewBufferString("")
-				w = tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
-				fmt.Fprint(w, "Cart:\t\t\t\n")
-				fmt.Fprint(w, displayCart(user.PersonalCart))
-				fmt.Fprint(w, "\t\t\t\n")
-				// show address and osc number
-				fmt.Fprintf(w, "OSC Card:\t\t%d\t\n", user.OscCardNumber)
-				fmt.Fprintf(w, "Address:\t\t%s\t\n", user.Address)
-				fmt.Fprint(w, "\t\t\t\n")
-				fmt.Fprint(w, "Confirm Purchase?")
-				w.Flush()
-				confirmPurchase := c.MultiChoice([]string{"No", "Yes"}, buf.String())
-				if confirmPurchase == 1 {
-					// remove items from inventory and add Purchase to purchase history
-					purchase := dao.Purchase{uuid.NewV4(), time.Now(), user.Username, user.Address, user.OscCardNumber, user.PersonalCart.GetTotalCost(), *user.PersonalCart}
-
-					for _, cartItem := range user.PersonalCart.Items {
-						dbclient.GetInventoryDBClient().Remove(cartItem.Item, cartItem.Quantity)
-					}
-					dbclient.GetPurchaseDBClient().AddPurchase(purchase)
-					user.PersonalCart.EmptyCart()
-				}
-			} else {
+			if len(user.PersonalCart.Items) == 0 {
 				c.Println("Cart is currently empty!")
+				return
 			}
+			// preview cart
+			buf := bytes.NewBufferString("")
+			w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
+			fmt.Fprint(w, "Cart:\t\t\t\n")
+			fmt.Fprint(w, displayCart(user.PersonalCart))
+			fmt.Fprint(w, "\t\t\t\n")
+			// show address and osc number
+			fmt.Fprintf(w, "OSC Card:\t\t%d\t\n", user.OscCardNumber)
+			fmt.Fprintf(w, "Address:\t\t%s\t\n", user.Address)
+			fmt.Fprint(w, "\t\t\t\n")
+			fmt.Fprint(w, "Would you like to change your address?")
+			w.Flush()
+			// offer to change address
+			changeAddress := c.MultiChoice([]string{"No", "Yes"}, buf.String())
+			if changeAddress == 1 {
+			enterAddress:
+				c.Print("Enter New Address: ")
+				newAddress := c.ReadLine()
+				c.Printf("Address:\t%s", newAddress)
+				correctAddress := c.MultiChoice([]string{"Yes", "No"}, "Is this address correct?")
+				if correctAddress == 1 {
+					goto enterAddress
+				}
+				user.Address = newAddress
+				dbclient.GetUserDBClient().ChangeAddress(user, newAddress)
+			}
+			// confirm order
+			buf = bytes.NewBufferString("")
+			w = tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
+			fmt.Fprint(w, "Cart:\t\t\t\n")
+			fmt.Fprint(w, displayCart(user.PersonalCart))
+			fmt.Fprint(w, "\t\t\t\n")
+			// show address and osc number
+			fmt.Fprintf(w, "OSC Card:\t\t%d\t\n", user.OscCardNumber)
+			fmt.Fprintf(w, "Address:\t\t%s\t\n", user.Address)
+			fmt.Fprint(w, "\t\t\t\n")
+			fmt.Fprint(w, "Confirm Purchase?")
+			w.Flush()
+			confirmPurchase := c.MultiChoice([]string{"No", "Yes"}, buf.String())
+			if confirmPurchase == 1 {
+				// remove items from inventory and add Purchase to purchase history
+				purchase := dao.Purchase{uuid.NewV4(), time.Now(), user.Username, user.Address, user.OscCardNumber, user.PersonalCart.GetTotalCost(), *user.PersonalCart}
+
+				for _, cartItem := range user.PersonalCart.Items {
+					dbclient.GetInventoryDBClient().Remove(cartItem.Item, cartItem.Quantity)
+				}
+				dbclient.GetPurchaseDBClient().AddPurchase(purchase)
+				user.PersonalCart.EmptyCart()
+			}
+
+			// This print ensures the command completes. Something isn't flushing right.
+			c.Println()
 		},
 	}
 
@@ -210,6 +217,12 @@ func addPurchaseHistoryToShell(shell *ishell.Shell) {
 		Help: "View purchase history",
 		Func: func(c *ishell.Context) {
 			purchases := dbclient.GetPurchaseDBClient().GetPurchasesByUsername(GetUserManager().user.Username)
+
+			if len(purchases) == 0 {
+				c.Println("You have not made any purchases")
+				return
+			}
+
 			buf := bytes.NewBufferString("")
 			w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
 
@@ -233,10 +246,11 @@ func addWhoamiToShell(shell *ishell.Shell) {
 		Name: "whoami",
 		Help: "show user information",
 		Func: func(c *ishell.Context) {
-			c.Printf("Username: %s\n", GetUserManager().user.Username)
-			c.Printf("Card Number: %d\n", GetUserManager().user.OscCardNumber)
-			c.Printf("Address: %s\n", GetUserManager().user.Address)
-			c.Printf("Cart: %s\n", GetUserManager().user.PersonalCart)
+			user := GetUserManager().user
+			c.Printf("Username: %s\n", user.Username)
+			c.Printf("Card Number: %d\n", user.OscCardNumber)
+			c.Printf("Address: %s\n", user.Address)
+			c.Printf("Cart: %s\n", user.PersonalCart)
 		},
 	}
 
@@ -244,11 +258,11 @@ func addWhoamiToShell(shell *ishell.Shell) {
 }
 
 func displayCart(cart *dao.Cart) string {
-	display := fmt.Sprintln("Item\tQuantity\tCost Each\t")
+	buf := bytes.NewBufferString("Item\tQuantity\tCost Each\t\n")
 	for _, cartItem := range cart.Items {
-		display += fmt.Sprintf(" %s\t%d\t%.2f\t\n", cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price)
+		fmt.Fprintf(buf, " %s\t%d\t%.2f\t\n", cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price)
 	}
-	display += fmt.Sprintln("\t\t\t")
-	display += fmt.Sprintf(" \tTotal Cost:\t%.2f\t\n", cart.GetTotalCost())
-	return display
+	fmt.Fprintln(buf, "\t\t\t")
+	fmt.Fprintf(buf, " \tTotal Cost:\t%.2f\t\n", cart.GetTotalCost())
+	return buf.String()
 }
