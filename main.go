@@ -29,6 +29,7 @@ func main() {
 	addRegisterToShell(loginShell)
 
 	addListItemsToShell(storeShell)
+	addAddItemToCartToShell(storeShell)
 
 	loginShell.Run()
 

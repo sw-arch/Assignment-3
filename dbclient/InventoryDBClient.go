@@ -35,17 +35,7 @@ func (client InventoryDBClient) GetAllItems() []dao.InventoryItem {
 	checkErr(err)
 	defer rows.Close()
 
-	var items []dao.InventoryItem
-	for rows.Next() {
-		newItem := dao.InventoryItem{}
-		var quantityReserved int
-		rowErr := rows.Scan(&newItem.Id, &newItem.Name, &newItem.Description, &newItem.Category, &newItem.Price, &newItem.QuantityAvailable, &quantityReserved)
-		checkErr(rowErr)
-
-		items = append(items, newItem)
-	}
-
-	return items
+	return makeInventoryItemsFromRows(rows)
 }
 
 func (client InventoryDBClient) GetItemsByCategory(category string) []dao.InventoryItem {
@@ -57,17 +47,7 @@ func (client InventoryDBClient) GetItemsByCategory(category string) []dao.Invent
 	checkErr(queryErr)
 	defer rows.Close()
 
-	var items []dao.InventoryItem
-	for rows.Next() {
-		newItem := dao.InventoryItem{}
-		var quantityReserved int
-		rowErr := rows.Scan(&newItem.Id, &newItem.Name, &newItem.Description, &newItem.Category, &newItem.Price, &newItem.QuantityAvailable, &quantityReserved)
-		checkErr(rowErr)
-
-		items = append(items, newItem)
-	}
-
-	return items
+	return makeInventoryItemsFromRows(rows)
 }
 
 func (client InventoryDBClient) GetItemByID(id uuid.UUID) dao.InventoryItem {
@@ -75,16 +55,7 @@ func (client InventoryDBClient) GetItemByID(id uuid.UUID) dao.InventoryItem {
 	checkErr(prepErr)
 
 	row := statement.QueryRow(id)
-	var uUID uuid.UUID
-	var name string
-	var description string
-	var category string
-	var price float64
-	var quantityOnHand int
-	var quantityReserved int
-	err := row.Scan(&uUID, &name, &description, &price, &quantityOnHand, &quantityReserved)
-	checkErr(err)
-	return dao.InventoryItem{id, name, category, description, price, quantityOnHand}
+	return makeInventoryItemFromRow(row)
 }
 
 func (client InventoryDBClient) SetItemQuantity(itemId uuid.UUID, quantity uint64) bool {
@@ -142,7 +113,7 @@ func (client InventoryDBClient) Remove(item dao.InventoryItem, quantity uint64) 
 func (client InventoryDBClient) GetAvailableCategories() []string {
 	var categories []string
 
-	rows, err := client.db.Query("SELECT category FROM inventory")
+	rows, err := client.db.Query("SELECT DISTINCT category FROM inventory")
 	checkErr(err)
 	defer rows.Close()
 
@@ -154,4 +125,29 @@ func (client InventoryDBClient) GetAvailableCategories() []string {
 	}
 
 	return categories
+}
+
+func makeInventoryItemFromRow(row *sql.Row) dao.InventoryItem {
+	item := dao.InventoryItem{}
+	var quantityOnHand uint64
+	var quantityReserved uint64
+	rowErr := row.Scan(&item.Id, &item.Name, &item.Description, &item.Category, &item.Price, &quantityOnHand, &quantityReserved)
+	checkErr(rowErr)
+	item.QuantityAvailable = quantityOnHand - quantityReserved
+	return item
+}
+
+func makeInventoryItemsFromRows(rows *sql.Rows) []dao.InventoryItem {
+	var items []dao.InventoryItem
+	for rows.Next() {
+		item := dao.InventoryItem{}
+		var quantityOnHand uint64
+		var quantityReserved uint64
+		rowErr := rows.Scan(&item.Id, &item.Name, &item.Description, &item.Category, &item.Price, &quantityOnHand, &quantityReserved)
+		checkErr(rowErr)
+		item.QuantityAvailable = quantityOnHand - quantityReserved
+		items = append(items, item)
+	}
+
+	return items
 }

@@ -8,5 +8,5 @@ type InventoryItem struct {
 	Description       string
 	Category          string
 	Price             float64
-	QuantityAvailable int
+	QuantityAvailable uint64
 }
