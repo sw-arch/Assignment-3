@@ -3,6 +3,7 @@ package main
 import (
 	"Assignment-3/dao"
 	"Assignment-3/dbclient"
+	"bytes"
 	"fmt"
 	"os"
 	"strconv"
@@ -139,6 +140,41 @@ func addDisplayCartToShell(shell *ishell.Shell) {
 	}
 
 	shell.AddCmd(displayCartCmd)
+}
+
+func addCheckoutToShell(shell *ishell.Shell) {
+	checkoutCmd := &ishell.Cmd{
+		Name: "checkout",
+		Help: "Proceed to checkout your stuffs",
+		Func: func(c *ishell.Context) {
+			// preview cart
+
+			// show address and osc number
+
+			// offer to change address
+
+			// confirm order
+
+			// remove items from inventory and add Purchase to purchase history
+		},
+	}
+
+	shell.AddCmd(checkoutCmd)
+}
+
+func addPurchaseHistoryToShell(shell *ishell.Shell) {
+	purchaseHistoryCmd := &ishell.Cmd{
+		Name: "purchases",
+		Help: "View purchase history",
+		Func: func(c *ishell.Context) {
+			purchases := dbclient.GetPurchaseDBClient().GetPurchasesByUsername(GetUserManager().user.Username)
+			var buffer bytes.Buffer
+
+			c.ShowPaged(buffer.String())
+		},
+	}
+
+	shell.AddCmd(purchaseHistoryCmd)
 }
 
 func addWhoamiToShell(shell *ishell.Shell) {

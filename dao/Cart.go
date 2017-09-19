@@ -59,10 +59,6 @@ func (cart *Cart) EmptyCart() {
 	cart.Items = []CartItem{}
 }
 
-func (cart *Cart) Checkout() {
-	// might need a redesign here
-}
-
 func (cart *Cart) GetTotalCost() float64 {
 	var totalCost float64 = 0.0
 	for _, item := range cart.Items {

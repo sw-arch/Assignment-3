@@ -4,10 +4,8 @@ import (
 	"Assignment-3/dao"
 	"database/sql"
 	"encoding/json"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/satori/go.uuid"
 )
 
 type PurchaseDBClient struct {
@@ -31,26 +29,15 @@ func GetPurchaseDBClient() *PurchaseDBClient {
 	return purchaseDBInstance
 }
 
-func (client PurchaseDBClient) GetPurchaseByID(id uuid.UUID) dao.Purchase {
-	statement, prepErr := client.db.Prepare("SELECT * FROM purchase WHERE id=?;")
+func (client PurchaseDBClient) GetPurchasesByUsername(username string) []dao.Purchase {
+	statement, prepErr := client.db.Prepare("SELECT * FROM purchase WHERE username=?;")
 	checkErr(prepErr)
 
-	row := statement.QueryRow(id)
-	var uUID uuid.UUID
-	var checkoutDate time.Time
-	var username string
-	var address string
-	var oscCardNumber uint64
-	var totalCost float64
-	var itemsEncoded []byte
+	rows, queryErr := statement.Query(username)
+	checkErr(queryErr)
+	defer rows.Close()
 
-	err := row.Scan(&uUID, &checkoutDate, &username, &address, &oscCardNumber, &totalCost, &itemsEncoded)
-	checkErr(err)
-
-	var items []dao.InventoryItem
-	marErr := json.Unmarshal(itemsEncoded, items)
-	checkErr(marErr)
-	return dao.Purchase{&id, checkoutDate, username, address, oscCardNumber, totalCost, items}
+	return makePurchasesFromRows(rows)
 }
 
 func (client PurchaseDBClient) AddPurchase(purchase dao.Purchase) bool {
@@ -62,4 +49,23 @@ func (client PurchaseDBClient) AddPurchase(purchase dao.Purchase) bool {
 	_, err := statement.Exec(purchase.Id, purchase.CheckoutDate, purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, items)
 	checkErr(err)
 	return true
+}
+
+func makePurchasesFromRows(rows *sql.Rows) []dao.Purchase {
+	var purchases []dao.Purchase
+	for rows.Next() {
+		purchase := dao.Purchase{}
+		var encodedItems []byte
+		rowErr := rows.Scan(&purchase.Id, &purchase.CheckoutDate, &purchase.Username, &purchase.Address, &purchase.OscCardNumber, &purchase.TotalCost, &encodedItems)
+		checkErr(rowErr)
+
+		var items []dao.InventoryItem
+		marErr := json.Unmarshal(encodedItems, items)
+		checkErr(marErr)
+		purchase.Items = items
+
+		purchases = append(purchases, purchase)
+	}
+
+	return purchases
 }
