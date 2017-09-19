@@ -8,6 +8,9 @@ import (
 	"os"
 	"strconv"
 	"text/tabwriter"
+	"time"
+
+	"github.com/satori/go.uuid"
 
 	"github.com/abiosoft/ishell"
 )
@@ -141,19 +144,60 @@ func addCheckoutToShell(shell *ishell.Shell) {
 		Help: "Proceed to checkout your stuffs",
 		Func: func(c *ishell.Context) {
 			user := GetUserManager().user
-			// preview cart
-			w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
-			fmt.Fprint(w, displayCart(user.PersonalCart))
-			w.Flush()
-			// show address and osc number
-			fmt.Fprintf(w, "Address:\t%s\n", user.Address)
-			fmt.Fprintf(w, "OSC Card:\t%d\n", user.OscCardNumber)
-			w.Flush()
-			// offer to change address
+			if len(user.PersonalCart.Items) > 0 {
+				// preview cart
+				buf := bytes.NewBufferString("")
+				w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
+				fmt.Fprint(w, "Cart:\t\t\t\n")
+				fmt.Fprint(w, displayCart(user.PersonalCart))
+				fmt.Fprint(w, "\t\t\t\n")
+				// show address and osc number
+				fmt.Fprintf(w, "OSC Card:\t\t%d\t\n", user.OscCardNumber)
+				fmt.Fprintf(w, "Address:\t\t%s\t\n", user.Address)
+				fmt.Fprint(w, "\t\t\t\n")
+				fmt.Fprint(w, "Would you like to change your address?")
+				w.Flush()
+				// offer to change address
+				changeAddress := c.MultiChoice([]string{"No", "Yes"}, buf.String())
+				if changeAddress == 1 {
+				enterAddress:
+					c.Print("Enter New Address: ")
+					newAddress := c.ReadLine()
+					c.Printf("Address:\t%s", newAddress)
+					correctAddress := c.MultiChoice([]string{"Yes", "No"}, "Is this address correct?")
+					if correctAddress == 1 {
+						goto enterAddress
+					}
+					user.Address = newAddress
+					dbclient.GetUserDBClient().ChangeAddress(user, newAddress)
+				}
+				c.ReadLine()
+				// confirm order
+				buf = bytes.NewBufferString("")
+				w = tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
+				fmt.Fprint(w, "Cart:\t\t\t\n")
+				fmt.Fprint(w, displayCart(user.PersonalCart))
+				fmt.Fprint(w, "\t\t\t\n")
+				// show address and osc number
+				fmt.Fprintf(w, "OSC Card:\t\t%d\t\n", user.OscCardNumber)
+				fmt.Fprintf(w, "Address:\t\t%s\t\n", user.Address)
+				fmt.Fprint(w, "\t\t\t\n")
+				fmt.Fprint(w, "Confirm Purchase?")
+				w.Flush()
+				confirmPurchase := c.MultiChoice([]string{"No", "Yes"}, buf.String())
+				if confirmPurchase == 1 {
+					// remove items from inventory and add Purchase to purchase history
+					purchase := dao.Purchase{uuid.NewV4(), time.Now(), user.Username, user.Address, user.OscCardNumber, user.PersonalCart.GetTotalCost(), *user.PersonalCart}
 
-			// confirm order
-
-			// remove items from inventory and add Purchase to purchase history
+					for _, cartItem := range user.PersonalCart.Items {
+						dbclient.GetInventoryDBClient().Remove(cartItem.Item, cartItem.Quantity)
+					}
+					dbclient.GetPurchaseDBClient().AddPurchase(purchase)
+					user.PersonalCart.EmptyCart()
+				}
+			} else {
+				c.Println("Cart is currently empty!")
+			}
 		},
 	}
 

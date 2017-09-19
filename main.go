@@ -33,6 +33,8 @@ func main() {
 	addAddItemToCartToShell(storeShell)
 	addRemoveItemFromCartToShell(storeShell)
 	addDisplayCartToShell(storeShell)
+	addCheckoutToShell(storeShell)
+	addPurchaseHistoryToShell(storeShell)
 	addWhoamiToShell(storeShell)
 
 	loginShell.Run()
