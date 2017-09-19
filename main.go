@@ -1,17 +1,43 @@
 package main
 
 import (
-	// "Assignment-3/dbclient"
+	"Assignment-3/dao"
+	"Assignment-3/dbclient"
+
 	"github.com/abiosoft/ishell"
 )
 
+var userManagerInstance *UserManager
+
+func GetUserManager() *UserManager {
+	if userManagerInstance == nil {
+		userManagerInstance = &UserManager{
+			dbclient.GetUserDBClient(),
+			dbclient.GetPurchaseDBClient(),
+			&dao.User{}}
+	}
+	return userManagerInstance
+}
+
 func main() {
-	shell := ishell.New()
+	loginShell := ishell.New()
+	storeShell := ishell.New()
 
-	shell.Println("Welcome to the Store")
+	loginShell.Println("Welcome to the Store")
 
-	addLoginToShell(shell)
-	addRegisterToShell(shell)
+	addLoginToShell(loginShell)
+	addRegisterToShell(loginShell)
 
-	shell.Run()
+	addListItemsToShell(storeShell)
+
+	loginShell.Run()
+
+	if userManagerInstance.user != nil {
+		// user managed to log in successfully. Start the store shell.
+		storeShell.Run()
+	}
+
+	// for loginShell.Active() || storeShell.Active() {
+
+	// }
 }

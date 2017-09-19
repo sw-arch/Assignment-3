@@ -7,7 +7,7 @@ import (
 func addLoginToShell(shell *ishell.Shell) {
 	shell.AddCmd(&ishell.Cmd{
 		Name: "login",
-		Help: "Authentification for login",
+		Help: "Authentication for login",
 		Func: func(c *ishell.Context) {
 			c.ShowPrompt(false)
 			defer c.ShowPrompt(true)
@@ -20,6 +20,7 @@ func addLoginToShell(shell *ishell.Shell) {
 			success := GetUserManager().logIn(username, password)
 			if success {
 				c.Println("Authentication Successful.")
+				c.Stop()
 			} else {
 				c.Println("Authentication Failed.")
 			}
@@ -55,6 +56,7 @@ func addRegisterToShell(shell *ishell.Shell) {
 			success := GetUserManager().register(username, password1, address)
 			if success {
 				c.Println("New User created.")
+				c.Stop()
 			} else {
 				c.Println("New User failed to create.")
 			}
