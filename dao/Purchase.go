@@ -7,7 +7,7 @@ import (
 )
 
 type Purchase struct {
-	Id            *uuid.UUID
+	Id            uuid.UUID
 	CheckoutDate  time.Time
 	Username      string
 	Address       string
