@@ -24,7 +24,7 @@ func GetPurchaseDBClient() *PurchaseDBClient {
             address Text,
             oscnum Integer,
             total Real,
-            items Blob`)
+            cart Blob`)
 	}
 	return purchaseDBInstance
 }
@@ -41,12 +41,12 @@ func (client PurchaseDBClient) GetPurchasesByUsername(username string) []dao.Pur
 }
 
 func (client PurchaseDBClient) AddPurchase(purchase dao.Purchase) bool {
-	items, marErr := json.Marshal(purchase.Items)
+	cart, marErr := json.Marshal(purchase.Cart)
 	checkErr(marErr)
-	statement, prepErr := client.db.Prepare("INSERT INTO purchase (id, checkoutdate, username, address, oscnum, total, items) VALUES (?, ?, ?, ?, ?, ?, ?);")
+	statement, prepErr := client.db.Prepare("INSERT INTO purchase (id, checkoutdate, username, address, oscnum, total, cart) VALUES (?, ?, ?, ?, ?, ?, ?);")
 	checkErr(prepErr)
 
-	_, err := statement.Exec(purchase.Id, purchase.CheckoutDate, purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, items)
+	_, err := statement.Exec(purchase.Id, purchase.CheckoutDate, purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, cart)
 	checkErr(err)
 	return true
 }
@@ -55,14 +55,14 @@ func makePurchasesFromRows(rows *sql.Rows) []dao.Purchase {
 	var purchases []dao.Purchase
 	for rows.Next() {
 		purchase := dao.Purchase{}
-		var encodedItems []byte
-		rowErr := rows.Scan(&purchase.Id, &purchase.CheckoutDate, &purchase.Username, &purchase.Address, &purchase.OscCardNumber, &purchase.TotalCost, &encodedItems)
+		var encodedCart []byte
+		rowErr := rows.Scan(&purchase.Id, &purchase.CheckoutDate, &purchase.Username, &purchase.Address, &purchase.OscCardNumber, &purchase.TotalCost, &encodedCart)
 		checkErr(rowErr)
 
-		var items []dao.InventoryItem
-		marErr := json.Unmarshal(encodedItems, items)
+		var cart dao.Cart
+		marErr := json.Unmarshal(encodedCart, cart)
 		checkErr(marErr)
-		purchase.Items = items
+		purchase.Cart = cart
 
 		purchases = append(purchases, purchase)
 	}
