@@ -18,12 +18,12 @@ func addListItemsToShell(shell *ishell.Shell) {
 		LongHelp: `List available items by category.`,
 	}
 
-	for _, category := range dbclient.GetInventoryDBClient().GetAvailableCategories() {
+	for _, category := range dbclient.GetInventoryDBClient().GetCategoryDescriptions() {
 		listItemsCmd.AddCmd(&ishell.Cmd{
-			Name: category,
-			Help: category,
+			Name: category[0],
+			Help: category[1],
 			Func: func(c *ishell.Context) {
-				items := dbclient.GetInventoryDBClient().GetItemsByCategory(c.Cmd.Help)
+				items := dbclient.GetInventoryDBClient().GetItemsByCategory(c.Cmd.Name)
 				for _, item := range items {
 					c.Printf("%.2f\t%s\n", item.Price, item.Name)
 				}

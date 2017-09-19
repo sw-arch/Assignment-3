@@ -27,6 +27,7 @@ func main() {
 
 	addLoginToShell(loginShell)
 	addRegisterToShell(loginShell)
+	addListItemsToShell(loginShell)
 
 	addListItemsToShell(storeShell)
 	addAddItemToCartToShell(storeShell)

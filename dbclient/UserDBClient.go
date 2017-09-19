@@ -45,7 +45,6 @@ func (client UserDBClient) GetUserByUsername(username string) (dao.User, bool) {
 
 	user.PersonalCart = &cart
 
-	fmt.Printf("Found user '%s' with osc number %d with cart %s\n", user.Username, user.OscCardNumber, cartEncoded)
 	return user, true
 }
 

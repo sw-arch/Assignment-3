@@ -3,7 +3,6 @@ package dbclient
 import (
 	"Assignment-3/dao"
 	"database/sql"
-	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/satori/go.uuid"
@@ -39,7 +38,6 @@ func (client InventoryDBClient) GetAllItems() []dao.InventoryItem {
 }
 
 func (client InventoryDBClient) GetItemsByCategory(category string) []dao.InventoryItem {
-	fmt.Println("getting items in category " + category)
 	statement, prepErr := client.db.Prepare("SELECT * FROM inventory WHERE category=?")
 	checkErr(prepErr)
 
@@ -122,6 +120,24 @@ func (client InventoryDBClient) GetAvailableCategories() []string {
 		err = rows.Scan(&category)
 		checkErr(err)
 		categories = append(categories, category)
+	}
+
+	return categories
+}
+
+func (client InventoryDBClient) GetCategoryDescriptions() [][]string {
+	var categories [][]string
+
+	rows, err := client.db.Query("SELECT identifier, description FROM categories")
+	checkErr(err)
+	defer rows.Close()
+
+	for rows.Next() {
+		var identifier string
+		var description string
+		err = rows.Scan(&identifier, &description)
+		checkErr(err)
+		categories = append(categories, []string{identifier, description})
 	}
 
 	return categories
