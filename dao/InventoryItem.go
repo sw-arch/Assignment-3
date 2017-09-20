@@ -7,6 +7,8 @@ type InventoryItem struct {
 	Name              string
 	Description       string
 	Category          string
+	AttributeOne      string
+	AttributeTwo      string
 	Price             float64
 	QuantityAvailable int64
 }

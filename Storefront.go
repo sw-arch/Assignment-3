@@ -279,7 +279,9 @@ func addLogoutToShell(shell *ishell.Shell) {
 func displayCart(cart *dao.Cart) string {
 	buf := bytes.NewBufferString("\tItem\t|\t|\tQuantity\t\tCost Each\n")
 	for _, cartItem := range cart.Items {
-		fmt.Fprintf(buf, "\t %s\t|\t|\t%d\t\t%.2f\n", cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price)
+		attributeID1, attributeID2 := dbclient.GetInventoryDBClient().GetAttributesByCategory(cartItem.Item.Category)
+
+		fmt.Fprintf(buf, "\t %s\t%s\t%s\t%d\t\t%.2f\n", cartItem.Item.Name, attributeID1, attributeID2, cartItem.Quantity, cartItem.Item.Price)
 	}
 	fmt.Fprintln(buf, "\t\t\t\t\t")
 	fmt.Fprintf(buf, "\t \t \t \tTotal Cost:\t\t%.2f\n", cart.GetTotalCost())

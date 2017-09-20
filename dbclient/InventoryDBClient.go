@@ -19,16 +19,21 @@ func GetInventoryDBClient() *InventoryDBClient {
 		inventoryDBInstance = &InventoryDBClient{initializeDB("inventory.db")}
 		createTable(inventoryDBInstance.db, "categories",
 			`identifier Text PRIMARY KEY,
-			description Text`)
+			description Text,
+			attribute_one Text,
+			attribute_two Text`)
 		createTable(inventoryDBInstance.db, "inventory",
 			`inventory_id Text PRIMARY KEY,
             name Text,
 			description Text,
 			category Text,
+			attribute_one_value Text,
+			attribute_two_value Text,
             price Real,
             quantity_on_hand Integer,
 			quantity_reserved Integer,
-			FOREIGN KEY (category) REFERENCES categories(identifier)`)
+			FOREIGN KEY (category) REFERENCES categories(identifier)
+			`)
 	}
 	return inventoryDBInstance
 }
@@ -145,6 +150,19 @@ func (client InventoryDBClient) GetCategoryDescriptions() [][]string {
 	}
 
 	return categories
+}
+
+func (client InventoryDBClient) GetAttributesByCategory(category string) (string, string) {
+	statement, prepErr := client.db.Prepare("SELECT attribute_one, attribute_two FROM categories WHERE identifier=?;")
+	checkErr(prepErr)
+
+	row := statement.QueryRow(category)
+	var a1 string
+	var a2 string
+	err := row.Scan(&a1, &a2)
+	checkErr(err)
+
+	return a1, a2
 }
 
 func makeInventoryItemFromRow(row *sql.Row) dao.InventoryItem {
