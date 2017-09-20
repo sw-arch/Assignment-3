@@ -235,10 +235,10 @@ func AddPurchaseHistoryToShell(shell *ishell.Shell) {
 				fmt.Fprintf(w, "Address:\t\t%s\n", p.Address)
 				fmt.Fprintf(w, "Date:\t\t%s\n", p.CheckoutDate.Format(time.RFC1123))
 				fmt.Fprintf(w, "OSC Card:\t\t%d\n", p.OscCardNumber)
-				fmt.Fprintln(w, "\t\t")
 				w.Flush()
+				fmt.Fprintln(buf)
 				fmt.Fprint(buf, displayCart(p.Cart))
-				fmt.Fprintln(buf, "\t\n\t")
+				fmt.Fprintln(buf)
 			}
 
 			c.ShowPaged(buf.String())
@@ -283,16 +283,17 @@ func AddLogoutToShell(shell *ishell.Shell) {
 func displayCart(cart *dao.Cart) string {
 	buf := bytes.NewBufferString("")
 	w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
-	fmt.Fprintln(w, "\tItem\t\t\tQuantity\t\tCost Each")
+	fmt.Fprintln(w, "Item\tQuantity\tCost Each\t")
 	for _, cartItem := range cart.Items {
 		attributeID1, attributeID2 := manager.GetStore().GetAttributesByCategory(cartItem.Item.Category)
 		attribute1 := fmt.Sprintf("%s: %s", attributeID1, cartItem.Item.AttributeOne)
 		attribute2 := fmt.Sprintf("%s: %s", attributeID2, cartItem.Item.AttributeTwo)
 
-		fmt.Fprintf(w, "\t %s\t%s\t%s\t%d\t\t%.2f\n", cartItem.Item.Name, attribute1, attribute2, cartItem.Quantity, cartItem.Item.Price)
+		fmt.Fprintf(w, "%s\t%d\t%.2f\t\n", cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price)
+		fmt.Fprintf(w, "%s   %s\t\t\t\n", attribute1, attribute2)
 	}
-	fmt.Fprintln(w, "\t\t\t\t\t")
-	fmt.Fprintf(w, "\t \t \t \tTotal Cost:\t\t%.2f\n", cart.GetTotalCost())
+	fmt.Fprintln(w, "\t\t\t")
+	fmt.Fprintf(w, "\tTotal Cost:\t%.2f\t\n", cart.GetTotalCost())
 	w.Flush()
 	return buf.String()
 }
