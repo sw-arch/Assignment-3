@@ -18,7 +18,7 @@ func (manager UserManager) logIn(username string, password string) bool {
 	return success && manager.user.Password == password
 }
 
-func (manager UserManager) logOut(user dao.User) {
+func (manager UserManager) logOut() {
 	*manager.user = dao.User{}
 	return
 }

@@ -260,6 +260,22 @@ func addWhoamiToShell(shell *ishell.Shell) {
 	shell.AddCmd(whoamiCmd)
 }
 
+func addLogoutToShell(shell *ishell.Shell) {
+	logoutCmd := &ishell.Cmd{
+		Name: "logout",
+		Help: "logout of user session",
+		Func: func(c *ishell.Context) {
+			c.ShowPrompt(false)
+			defer c.ShowPrompt(true)
+
+			GetUserManager().logOut()
+			c.Stop()
+		},
+	}
+
+	shell.AddCmd(logoutCmd)
+}
+
 func displayCart(cart *dao.Cart) string {
 	buf := bytes.NewBufferString("\tItem\t|\t|\tQuantity\t\tCost Each\n")
 	for _, cartItem := range cart.Items {

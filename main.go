@@ -36,12 +36,17 @@ func main() {
 	addCheckoutToShell(storeShell)
 	addPurchaseHistoryToShell(storeShell)
 	addWhoamiToShell(storeShell)
+	addLogoutToShell(storeShell)
 
+login:
 	loginShell.Run()
 
 	if userManagerInstance != nil && userManagerInstance.user != nil {
 		// user managed to log in successfully. Start the store shell.
 		storeShell.Run()
+		if userManagerInstance.user.Username == "" {
+			goto login
+		}
 	}
 
 	// for loginShell.Active() || storeShell.Active() {
