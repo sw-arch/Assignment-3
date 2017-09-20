@@ -1,22 +1,8 @@
 package main
 
 import (
-	"Assignment-3/dbclient"
-
 	"github.com/abiosoft/ishell"
 )
-
-var userManagerInstance *UserManager
-
-func GetUserManager() *UserManager {
-	if userManagerInstance == nil {
-		userManagerInstance = &UserManager{
-			dbclient.GetUserDBClient(),
-			dbclient.GetPurchaseDBClient(),
-			nil}
-	}
-	return userManagerInstance
-}
 
 func main() {
 	loginShell := ishell.New()

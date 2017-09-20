@@ -12,6 +12,18 @@ type UserManager struct {
 	user           *dao.User
 }
 
+var userManagerInstance *UserManager
+
+func GetUserManager() *UserManager {
+	if userManagerInstance == nil {
+		userManagerInstance = &UserManager{
+			dbclient.GetUserDBClient(),
+			dbclient.GetPurchaseDBClient(),
+			nil}
+	}
+	return userManagerInstance
+}
+
 func (manager *UserManager) logIn(username string, password string) bool {
 	user, success := manager.userClient.GetUserByUsername(username)
 	if success && user.Password == password {
