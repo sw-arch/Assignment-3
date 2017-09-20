@@ -4,6 +4,7 @@ import (
 	"Assignment-3/dao"
 	"database/sql"
 	"encoding/json"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -19,7 +20,7 @@ func GetPurchaseDBClient() *PurchaseDBClient {
 		purchaseDBInstance = &PurchaseDBClient{initializeDB("purchase.db")}
 		createTable(purchaseDBInstance.db, "purchase",
 			`id Text primary key,
-            checkoutdate Numeric,
+            checkoutdate Text,
             username Text,
             address Text,
             oscnum Integer,
@@ -40,13 +41,13 @@ func (client PurchaseDBClient) GetPurchasesByUsername(username string) []dao.Pur
 	return makePurchasesFromRows(rows)
 }
 
-func (client PurchaseDBClient) AddPurchase(purchase dao.Purchase) bool {
-	cart, marErr := json.Marshal(purchase.Cart)
+func (client PurchaseDBClient) AddPurchase(purchase *dao.Purchase) bool {
+	encodedCart, marErr := json.Marshal(purchase.Cart)
 	checkErr(marErr)
 	statement, prepErr := client.db.Prepare("INSERT INTO purchase (id, checkoutdate, username, address, oscnum, total, cart) VALUES (?, ?, ?, ?, ?, ?, ?);")
 	checkErr(prepErr)
 
-	_, err := statement.Exec(purchase.Id, purchase.CheckoutDate, purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, cart)
+	_, err := statement.Exec(purchase.Id, purchase.CheckoutDate.Format(time.RFC3339), purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, encodedCart)
 	checkErr(err)
 	return true
 }
@@ -56,13 +57,15 @@ func makePurchasesFromRows(rows *sql.Rows) []dao.Purchase {
 	for rows.Next() {
 		purchase := dao.Purchase{}
 		var encodedCart []byte
-		rowErr := rows.Scan(&purchase.Id, &purchase.CheckoutDate, &purchase.Username, &purchase.Address, &purchase.OscCardNumber, &purchase.TotalCost, &encodedCart)
+		var date string
+		rowErr := rows.Scan(&purchase.Id, &date, &purchase.Username, &purchase.Address, &purchase.OscCardNumber, &purchase.TotalCost, &encodedCart)
 		checkErr(rowErr)
 
 		var cart dao.Cart
-		marErr := json.Unmarshal(encodedCart, cart)
+		marErr := json.Unmarshal(encodedCart, &cart)
 		checkErr(marErr)
-		purchase.Cart = cart
+		purchase.Cart = &cart
+		purchase.CheckoutDate, _ = time.Parse(time.RFC3339, date)
 
 		purchases = append(purchases, purchase)
 	}

@@ -194,13 +194,14 @@ func addCheckoutToShell(shell *ishell.Shell) {
 			confirmPurchase := c.MultiChoice([]string{"No", "Yes"}, buf.String())
 			if confirmPurchase == 1 {
 				// remove items from inventory and add Purchase to purchase history
-				purchase := dao.Purchase{uuid.NewV4(), time.Now(), user.Username, user.Address, user.OscCardNumber, user.PersonalCart.GetTotalCost(), *user.PersonalCart}
+				purchase := dao.Purchase{uuid.NewV4(), time.Now(), user.Username, user.Address, user.OscCardNumber, user.PersonalCart.GetTotalCost(), user.PersonalCart}
 
 				for _, cartItem := range user.PersonalCart.Items {
 					dbclient.GetInventoryDBClient().Remove(cartItem.Item, cartItem.Quantity)
 				}
-				dbclient.GetPurchaseDBClient().AddPurchase(purchase)
+				dbclient.GetPurchaseDBClient().AddPurchase(&purchase)
 				user.PersonalCart.EmptyCart()
+				dbclient.GetUserDBClient().SetCart(user)
 			}
 
 			// This print ensures the command completes. Something isn't flushing right.
@@ -224,16 +225,18 @@ func addPurchaseHistoryToShell(shell *ishell.Shell) {
 			}
 
 			buf := bytes.NewBufferString("")
-			w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
+			w := tabwriter.NewWriter(buf, 0, 0, 5, ' ', tabwriter.AlignRight)
 
 			for p := 0; p < len(purchases); p++ {
-				fmt.Fprintf(w, "Purchase:\t%s\n", purchases[p].Id.String())
-				fmt.Fprintf(w, "Address:\t%s\n", purchases[p].Address)
-				fmt.Fprintf(w, "Date:\t%s\n", purchases[p].CheckoutDate.String())
-				fmt.Fprintf(w, "OSC Card:\t%d\n", purchases[p].OscCardNumber)
-				fmt.Fprint(w, "Cart:\n")
-				fmt.Fprintf(w, displayCart(&purchases[p].Cart))
+				fmt.Fprintf(w, "Purchase:\t%s\t\t\t\t\n", purchases[p].Id.String())
+				fmt.Fprintf(w, "Address:\t%s\t\t\t\t\n", purchases[p].Address)
+				fmt.Fprintf(w, "Date:\t%s\t\t\t\t\n", purchases[p].CheckoutDate.String())
+				fmt.Fprintf(w, "OSC Card:\t%d\t\t\t\t\n", purchases[p].OscCardNumber)
+				fmt.Fprintln(w, "Cart:\t\t\t\t\t")
+				fmt.Fprint(w, displayCart(purchases[p].Cart))
+				fmt.Fprintln(w, "\t\t\t\t\t\n\t\t\t\t\t")
 			}
+			w.Flush()
 			c.ShowPaged(buf.String())
 		},
 	}
@@ -258,11 +261,11 @@ func addWhoamiToShell(shell *ishell.Shell) {
 }
 
 func displayCart(cart *dao.Cart) string {
-	buf := bytes.NewBufferString("Item\tQuantity\tCost Each\t\n")
+	buf := bytes.NewBufferString("\tItem\t|\t|\tQuantity\t\tCost Each\n")
 	for _, cartItem := range cart.Items {
-		fmt.Fprintf(buf, " %s\t%d\t%.2f\t\n", cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price)
+		fmt.Fprintf(buf, "\t %s\t|\t|\t%d\t\t%.2f\n", cartItem.Item.Name, cartItem.Quantity, cartItem.Item.Price)
 	}
-	fmt.Fprintln(buf, "\t\t\t")
-	fmt.Fprintf(buf, " \tTotal Cost:\t%.2f\t\n", cart.GetTotalCost())
+	fmt.Fprintln(buf, "\t\t\t\t\t")
+	fmt.Fprintf(buf, "\t \t \t \tTotal Cost:\t\t%.2f\n", cart.GetTotalCost())
 	return buf.String()
 }

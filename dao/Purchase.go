@@ -13,5 +13,5 @@ type Purchase struct {
 	Address       string
 	OscCardNumber uint64
 	TotalCost     float64
-	Cart          Cart
+	Cart          *Cart
 }
