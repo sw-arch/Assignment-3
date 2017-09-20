@@ -100,3 +100,18 @@ VALUES ("68b9ae46-87ae-4953-b56f-f5fc0c9edc78", "Darth Vader action figure", "7 
 
 INSERT INTO inventory (inventory_id, name, description, attribute_one_value, attribute_two_value, category, price, quantity_on_hand, quantity_reserved)
 VALUES ("6cb32dd9-2063-4431-bf5e-28483dc98d2e", "No Country for Old Men", "novel by Cormac McCarthy", "IBN-ADPOFHA1034", "Cormac McCarthy", "books", 12.99, 42, 12);
+
+INSERT INTO inventory (inventory_id, name, description, attribute_one_value, attribute_two_value, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("1975c771-758d-4181-aa9d-11b0437ff7c3", "American Flag shirt", "patriotic shirt", "male", "top", "clothes", 14.99, 30, 2);
+
+INSERT INTO inventory (inventory_id, name, description, attribute_one_value, attribute_two_value, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("2dbacbcc-1894-44e2-a6fd-da67aa2d353c", "Black Heels", "tall dark heels", "female", "shoes", "clothes", 40.00, 10, 5);
+
+INSERT INTO inventory (inventory_id, name, description, attribute_one_value, attribute_two_value, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("1b7791b4-388c-4531-a854-1e4c7e4e34e2", "Fedora", "now you can look cool", "uni-sex", "hat", "clothes", 25.99, 8, 1);
+
+INSERT INTO inventory (inventory_id, name, description, attribute_one_value, attribute_two_value, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("9a562bc7-7eef-4b8f-b9f3-0821d65f15a9", "Skinny Jeans", "dark wash with artificiall rips", "female", "bottoms", "clothes", 23.00, 35, 8);
+
+INSERT INTO inventory (inventory_id, name, description, attribute_one_value, attribute_two_value, category, price, quantity_on_hand, quantity_reserved)
+VALUES ("c4064cee-364f-4cff-8a0e-d5e2b364e6d3", "4-Leaf Clover Socks", "you sure are lucky", "uni-sex", "socks", "clothes", 8.99, 16, 4);
