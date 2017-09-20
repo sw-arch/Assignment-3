@@ -63,9 +63,9 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 
 			quantityDesired, err := strconv.Atoi(c.ReadLine())
 			for {
-				if err == nil && quantityDesired > 0 && uint64(quantityDesired) <= item.QuantityAvailable {
-					dbclient.GetInventoryDBClient().Reserve(item, uint64(quantityDesired))
-					GetUserManager().user.PersonalCart.AddItem(item, uint64(quantityDesired))
+				if err == nil && quantityDesired > 0 && int64(quantityDesired) <= item.QuantityAvailable {
+					dbclient.GetInventoryDBClient().Reserve(item, int64(quantityDesired))
+					GetUserManager().user.PersonalCart.AddItem(item, int64(quantityDesired))
 					dbclient.GetUserDBClient().SetCart(GetUserManager().user)
 					break
 				} else {
@@ -111,9 +111,9 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 
 					quantityToRemove, err := strconv.Atoi(c.ReadLine())
 					for {
-						if err == nil && quantityToRemove > 0 && uint64(quantityToRemove) <= item.Quantity {
-							dbclient.GetInventoryDBClient().Release(item.Item, uint64(quantityToRemove))
-							user.PersonalCart.RemoveItem(item.Item, uint64(quantityToRemove))
+						if err == nil && quantityToRemove > 0 && int64(quantityToRemove) <= item.Quantity {
+							dbclient.GetInventoryDBClient().Release(item.Item, int64(quantityToRemove))
+							user.PersonalCart.RemoveItem(item.Item, int64(quantityToRemove))
 							dbclient.GetUserDBClient().SetCart(GetUserManager().user)
 							break
 						} else {

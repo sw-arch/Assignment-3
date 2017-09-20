@@ -6,10 +6,10 @@ type Cart struct {
 
 type CartItem struct {
 	Item     InventoryItem
-	Quantity uint64
+	Quantity int64
 }
 
-func (cart *Cart) AddItem(item InventoryItem, quantity uint64) {
+func (cart *Cart) AddItem(item InventoryItem, quantity int64) {
 	for i, cartItem := range cart.Items {
 		if cartItem.Item.Id == item.Id && cartItem.Item.Price == item.Price {
 			cart.Items[i].Quantity += quantity
@@ -21,7 +21,7 @@ func (cart *Cart) AddItem(item InventoryItem, quantity uint64) {
 	return
 }
 
-func (cart *Cart) RemoveItem(item InventoryItem, quantity uint64) {
+func (cart *Cart) RemoveItem(item InventoryItem, quantity int64) {
 	var foundItem *CartItem
 	var foundIndex int
 	for i, cartItem := range cart.Items {
@@ -39,7 +39,7 @@ func (cart *Cart) RemoveItem(item InventoryItem, quantity uint64) {
 }
 
 func (cart *Cart) GetItems() []InventoryItem {
-	var totalQuantity uint64
+	var totalQuantity int64
 	for _, item := range cart.Items {
 		totalQuantity += item.Quantity
 	}

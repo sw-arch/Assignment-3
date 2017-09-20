@@ -60,7 +60,7 @@ func (client InventoryDBClient) GetItemByID(id uuid.UUID) dao.InventoryItem {
 	return makeInventoryItemFromRow(row)
 }
 
-func (client InventoryDBClient) SetItemQuantity(itemId uuid.UUID, quantity uint64) bool {
+func (client InventoryDBClient) SetItemQuantity(itemId uuid.UUID, quantity int64) bool {
 	statement, prepErr := client.db.Prepare("UPDATE inventory SET quantity_on_hand=? where inventory_id=?;")
 	checkErr(prepErr)
 
@@ -73,7 +73,7 @@ func (client InventoryDBClient) SetItemQuantity(itemId uuid.UUID, quantity uint6
 	return rowCount != 0
 }
 
-func (client InventoryDBClient) Reserve(item dao.InventoryItem, quantity uint64) bool {
+func (client InventoryDBClient) Reserve(item dao.InventoryItem, quantity int64) bool {
 	statement, prepErr := client.db.Prepare("UPDATE inventory SET quantity_reserved=quantity_reserved + ? where inventory_id=?;")
 	checkErr(prepErr)
 
@@ -86,7 +86,7 @@ func (client InventoryDBClient) Reserve(item dao.InventoryItem, quantity uint64)
 	return rowCount != 0
 }
 
-func (client InventoryDBClient) Release(item dao.InventoryItem, quantity uint64) bool {
+func (client InventoryDBClient) Release(item dao.InventoryItem, quantity int64) bool {
 	statement, prepErr := client.db.Prepare("UPDATE inventory SET quantity_reserved=quantity_reserved - ? where inventory_id=?;")
 	checkErr(prepErr)
 
@@ -99,11 +99,11 @@ func (client InventoryDBClient) Release(item dao.InventoryItem, quantity uint64)
 	return rowCount != 0
 }
 
-func (client InventoryDBClient) Remove(item dao.InventoryItem, quantity uint64) bool {
+func (client InventoryDBClient) Remove(item dao.InventoryItem, quantity int64) bool {
 	statement, prepErr := client.db.Prepare("UPDATE inventory SET quantity_on_hand=quantity_on_hand - ?, quantity_reserved=quantity_reserved - ? where inventory_id=?;")
 	checkErr(prepErr)
 
-	res, execErr := statement.Exec(quantity, item.Id.String())
+	res, execErr := statement.Exec(quantity, quantity, item.Id.String())
 	checkErr(execErr)
 
 	rowCount, err := res.RowsAffected()
@@ -149,11 +149,11 @@ func (client InventoryDBClient) GetCategoryDescriptions() [][]string {
 
 func makeInventoryItemFromRow(row *sql.Row) dao.InventoryItem {
 	item := dao.InventoryItem{}
-	var quantityOnHand uint64
-	var quantityReserved uint64
+	var quantityOnHand int64
+	var quantityReserved int64
 	rowErr := row.Scan(&item.Id, &item.Name, &item.Description, &item.Category, &item.Price, &quantityOnHand, &quantityReserved)
 	checkErr(rowErr)
-	item.QuantityAvailable = quantityOnHand - quantityReserved
+	item.QuantityAvailable = quantityOnHand
 	return item
 }
 
@@ -161,11 +161,11 @@ func makeInventoryItemsFromRows(rows *sql.Rows) []dao.InventoryItem {
 	var items []dao.InventoryItem
 	for rows.Next() {
 		item := dao.InventoryItem{}
-		var quantityOnHand uint64
-		var quantityReserved uint64
+		var quantityOnHand int64
+		var quantityReserved int64
 		rowErr := rows.Scan(&item.Id, &item.Name, &item.Description, &item.Category, &item.Price, &quantityOnHand, &quantityReserved)
 		checkErr(rowErr)
-		item.QuantityAvailable = quantityOnHand - quantityReserved
+		item.QuantityAvailable = quantityOnHand
 		items = append(items, item)
 	}
 
