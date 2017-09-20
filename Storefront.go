@@ -108,20 +108,23 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 				if item.Quantity == 1 {
 					itemsToRemove = append(itemsToRemove, item)
 				} else {
-					c.Printf("You selected %s\nDescription:\n\t%s\n\nYou have %d in your cart. How many would you like to remove?\n",
-						item.Item.Name, item.Item.Description, item.Quantity)
+					attributeID1, attributeID2 := dbclient.GetInventoryDBClient().GetAttributesByCategory(item.Item.Category)
+					attribute1 := fmt.Sprintf("%s: %s", attributeID1, item.Item.AttributeOne)
+					attribute2 := fmt.Sprintf("%s: %s", attributeID2, item.Item.AttributeTwo)
 
+					c.Printf("You selected %s\nDescription:\n\t%s\n\t%s\n\t%s\nThere are %d available. How many would you like to add to your cart?\n",
+						item.Item.Name, item.Item.Description, attribute1, attribute2, item.Quantity)
+
+				remove:
 					quantityToRemove, err := strconv.Atoi(c.ReadLine())
-					for {
-						if err == nil && quantityToRemove > 0 && int64(quantityToRemove) <= item.Quantity {
-							dbclient.GetInventoryDBClient().Release(item.Item, int64(quantityToRemove))
-							user.PersonalCart.RemoveItem(item.Item, int64(quantityToRemove))
-							dbclient.GetUserDBClient().SetCart(GetUserManager().user)
-							break
-						} else {
-							c.Printf("Invalid quantity. Choose a number between 1 and %d\n", item.Quantity)
-							quantityToRemove, err = strconv.Atoi(c.ReadLine())
-						}
+					if err == nil && quantityToRemove > 0 && int64(quantityToRemove) <= item.Quantity {
+						dbclient.GetInventoryDBClient().Release(item.Item, int64(quantityToRemove))
+						user.PersonalCart.RemoveItem(item.Item, int64(quantityToRemove))
+						dbclient.GetUserDBClient().SetCart(GetUserManager().user)
+						c.ReadLine()
+					} else {
+						c.Printf("Invalid quantity. Choose a number between 1 and %d\n", item.Quantity)
+						goto remove
 					}
 				}
 			}
