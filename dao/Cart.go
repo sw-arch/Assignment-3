@@ -22,19 +22,14 @@ func (cart *Cart) AddItem(item InventoryItem, quantity int64) {
 }
 
 func (cart *Cart) RemoveItem(item InventoryItem, quantity int64) {
-	var foundItem *CartItem
-	var foundIndex int
 	for i, cartItem := range cart.Items {
 		if cartItem.Item == item {
-			foundItem = &cartItem
-			foundIndex = i
+			if cartItem.Quantity-quantity > 0 {
+				cart.Items[i].Quantity -= quantity
+			} else {
+				cart.Items = append(cart.Items[:i], cart.Items[i+1:]...)
+			}
 		}
-	}
-
-	if foundItem != nil && foundItem.Quantity-quantity > 0 {
-		foundItem.Quantity = foundItem.Quantity - quantity
-	} else {
-		cart.Items = append(cart.Items[:foundIndex], cart.Items[foundIndex+1:]...)
 	}
 }
 
