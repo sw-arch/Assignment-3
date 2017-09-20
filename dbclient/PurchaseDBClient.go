@@ -47,7 +47,7 @@ func (client PurchaseDBClient) AddPurchase(purchase *dao.Purchase) bool {
 	statement, prepErr := client.db.Prepare("INSERT INTO purchase (id, checkoutdate, username, address, oscnum, total, cart) VALUES (?, ?, ?, ?, ?, ?, ?);")
 	checkErr(prepErr)
 
-	_, err := statement.Exec(purchase.Id, purchase.CheckoutDate.Format(time.RFC3339), purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, encodedCart)
+	_, err := statement.Exec(purchase.Id, purchase.CheckoutDate.Format(time.RFC1123), purchase.Username, purchase.Address, purchase.OscCardNumber, purchase.TotalCost, encodedCart)
 	checkErr(err)
 	return true
 }
@@ -65,7 +65,7 @@ func makePurchasesFromRows(rows *sql.Rows) []dao.Purchase {
 		marErr := json.Unmarshal(encodedCart, &cart)
 		checkErr(marErr)
 		purchase.Cart = &cart
-		purchase.CheckoutDate, _ = time.Parse(time.RFC3339, date)
+		purchase.CheckoutDate, _ = time.Parse(time.RFC1123, date)
 
 		purchases = append(purchases, purchase)
 	}
