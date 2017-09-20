@@ -8,4 +8,4 @@ CREATE TABLE users (
     oscnum Integer UNIQUE
 );
 
-INSERT INTO users VALUES ("TestUser", "TestPassword", '{"Items":[{"Item":{"Id":"a92357c1-71c9-49ff-88b2-dc156050d560","Name":"Perplexus","Description":"nolling ball obstacle course puzzle game","Category":"toys","Price":19.99,"QuantityAvailable":21},"Quantity":4},{"Item":{"Id":"68b9ae46-87ae-4953-b56f-f5fc0c9edc78","Name":"Darth Vader action figure","Description":"7 inch action figure of Darth Vader","Category":"toys","Price":9.99,"QuantityAvailable":5},"Quantity":3}]}', "123 Test Ave", 1234567890)
+INSERT INTO users VALUES ("TestUser", "TestPassword", '{"Items":[{"Item":{"Id":"1975c771-758d-4181-aa9d-11b0437ff7c3","Name":"American Flag shirt","Description":"patriotic shirt","Category":"clothes","AttributeOne":"male","AttributeTwo":"top","Price":14.99,"QuantityAvailable":28},"Quantity":1},{"Item":{"Id":"acb4ddd5-94e3-44b6-838c-02cec26ba3b6","Name":"Bounty paper towels","Description":"package of eight rolls of Bounty brand paper towels","Category":"house","AttributeOne":"kitchen","AttributeTwo":"no","Price":14.99,"QuantityAvailable":42},"Quantity":2}]}', "123 Test Ave", 1234567890)

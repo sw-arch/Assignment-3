@@ -66,11 +66,13 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 
 			quantityDesired, err := strconv.Atoi(c.ReadLine())
 			for {
-				if err == nil && quantityDesired >= 0 && int64(quantityDesired) <= item.QuantityAvailable {
+				if err == nil && quantityDesired > 0 && int64(quantityDesired) <= item.QuantityAvailable {
 					GetStore().AddToCart(item, quantityDesired)
 					break
+				} else if quantityDesired == 0 {
+					break
 				} else {
-					c.Printf("Invalid quantity. Choose a number between 1 and %d\n", item.QuantityAvailable)
+					c.Printf("Invalid quantity. Choose a number between 0 and %d\n", item.QuantityAvailable)
 					quantityDesired, err = strconv.Atoi(c.ReadLine())
 				}
 			}
@@ -117,11 +119,13 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 
 					quantityToRemove, err := strconv.Atoi(c.ReadLine())
 					for {
-						if err == nil && quantityToRemove >= 0 && int64(quantityToRemove) <= item.Quantity {
+						if err == nil && quantityToRemove > 0 && int64(quantityToRemove) <= item.Quantity {
 							GetStore().RemoveFromCart(item.Item, quantityToRemove)
 							break
+						} else if quantityToRemove == 0 {
+							break
 						} else {
-							c.Printf("Invalid quantity. Choose a number between 1 and %d\n", item.Quantity)
+							c.Printf("Invalid quantity. Choose a number between 0 and %d\n", item.Quantity)
 							quantityToRemove, err = strconv.Atoi(c.ReadLine())
 						}
 					}
