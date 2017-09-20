@@ -19,7 +19,7 @@ func GetPurchaseDBClient() *PurchaseDBClient {
 	if purchaseDBInstance == nil {
 		purchaseDBInstance = &PurchaseDBClient{initializeDB("purchase.db")}
 		createTable(purchaseDBInstance.db, "purchase",
-			`id Text primary key,
+			`id Text PRIMARY KEY,
             checkoutdate Text,
             username Text,
             address Text,

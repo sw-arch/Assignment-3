@@ -1,7 +1,6 @@
 package main
 
 import (
-	"Assignment-3/dao"
 	"Assignment-3/dbclient"
 
 	"github.com/abiosoft/ishell"
@@ -14,7 +13,7 @@ func GetUserManager() *UserManager {
 		userManagerInstance = &UserManager{
 			dbclient.GetUserDBClient(),
 			dbclient.GetPurchaseDBClient(),
-			&dao.User{}}
+			nil}
 	}
 	return userManagerInstance
 }
@@ -41,15 +40,12 @@ func main() {
 login:
 	loginShell.Run()
 
-	if userManagerInstance != nil && userManagerInstance.user != nil {
+	if GetUserManager().user != nil {
 		// user managed to log in successfully. Start the store shell.
 		storeShell.Run()
-		if userManagerInstance.user.Username == "" {
+		if GetUserManager().user == nil {
+			// user logged out, restart the login shell.
 			goto login
 		}
 	}
-
-	// for loginShell.Active() || storeShell.Active() {
-
-	// }
 }

@@ -19,11 +19,11 @@ func GetUserDBClient() *UserDBClient {
 	if userDBInstance == nil {
 		userDBInstance = &UserDBClient{initializeDB("users.db")}
 		createTable(userDBInstance.db, "users",
-			`username Text primary key,
+			`username Text PRIMARY KEY,
             password Text,
             cart Blob,
             address Text,
-            oscnum Integer unique`)
+            oscnum Integer UNIQUE`)
 	}
 	return userDBInstance
 }

@@ -12,14 +12,17 @@ type UserManager struct {
 	user           *dao.User
 }
 
-func (manager UserManager) logIn(username string, password string) bool {
-	var success bool
-	*manager.user, success = manager.userClient.GetUserByUsername(username)
-	return success && manager.user.Password == password
+func (manager *UserManager) logIn(username string, password string) bool {
+	user, success := manager.userClient.GetUserByUsername(username)
+	if success && user.Password == password {
+		manager.user = &user
+		return true
+	}
+	return false
 }
 
-func (manager UserManager) logOut() {
-	*manager.user = dao.User{}
+func (manager *UserManager) logOut() {
+	manager.user = nil
 	return
 }
 
@@ -44,7 +47,7 @@ func (manager UserManager) register(username string, password string, address st
 	created := manager.userClient.CreateUser(&user)
 
 	if created {
-		*manager.user = user
+		manager.user = &user
 	}
 
 	return created

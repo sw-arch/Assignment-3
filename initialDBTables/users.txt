@@ -1,0 +1,11 @@
+-- Table Creation
+
+CREATE TABLE users (
+    username Text PRIMARY KEY,
+    password Text,
+    cart Blob,
+    address Text,
+    oscnum Integer UNIQUE
+);
+
+INSERT INTO users VALUES ("TestUser", "TestPassword", '{"Items":[{"Item":{"Id":"a92357c1-71c9-49ff-88b2-dc156050d560","Name":"Perplexus","Description":"nolling ball obstacle course puzzle game","Category":"toys","Price":19.99,"QuantityAvailable":21},"Quantity":4},{"Item":{"Id":"68b9ae46-87ae-4953-b56f-f5fc0c9edc78","Name":"Darth Vader action figure","Description":"7 inch action figure of Darth Vader","Category":"toys","Price":9.99,"QuantityAvailable":5},"Quantity":3}]}', "123 Test Ave", 1234567890)

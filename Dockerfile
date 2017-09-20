@@ -8,6 +8,7 @@ COPY . .
 RUN go-wrapper download
 RUN go-wrapper install
 
-RUN sqlite3 ../../bin/inventory.db<initialDBTables/inventory.txt
+RUN sqlite3 inventory.db<initialDBTables/inventory.txt && \
+    sqlite3 users.db<initialDBTables/users.txt
 
 CMD ["go-wrapper", "run"]
