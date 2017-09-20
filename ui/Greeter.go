@@ -1,10 +1,12 @@
-package main
+package ui
 
 import (
+	"Assignment-3/manager"
+
 	"github.com/abiosoft/ishell"
 )
 
-func addLoginToShell(shell *ishell.Shell) {
+func AddLoginToShell(shell *ishell.Shell) {
 	shell.AddCmd(&ishell.Cmd{
 		Name: "login",
 		Help: "Authentication for login",
@@ -17,7 +19,7 @@ func addLoginToShell(shell *ishell.Shell) {
 			c.Print("Password: ")
 			password := c.ReadPassword()
 
-			success := GetUserManager().logIn(username, password)
+			success := manager.GetUserManager().LogIn(username, password)
 			if success {
 				c.Println("Authentication Successful.")
 				c.Stop()
@@ -28,7 +30,7 @@ func addLoginToShell(shell *ishell.Shell) {
 	})
 }
 
-func addRegisterToShell(shell *ishell.Shell) {
+func AddRegisterToShell(shell *ishell.Shell) {
 	shell.AddCmd(&ishell.Cmd{
 		Name: "register",
 		Help: "Register a new user",
@@ -53,7 +55,7 @@ func addRegisterToShell(shell *ishell.Shell) {
 			c.Print("Address: ")
 			address := c.ReadLine()
 
-			success := GetUserManager().register(username, password1, address)
+			success := manager.GetUserManager().Register(username, password1, address)
 			if success {
 				c.Println("New User created.")
 				c.Stop()

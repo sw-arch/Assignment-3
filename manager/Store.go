@@ -1,4 +1,4 @@
-package main
+package manager
 
 import (
 	"Assignment-3/dao"
@@ -34,12 +34,12 @@ func (store *Store) GetAttributesByCategory(category string) (string, string) {
 
 func (store *Store) AddToCart(item dao.InventoryItem, quantityDesired int) {
 	dbclient.GetInventoryDBClient().Reserve(item, int64(quantityDesired))
-	GetUserManager().user.PersonalCart.AddItem(item, int64(quantityDesired))
-	dbclient.GetUserDBClient().SaveCart(GetUserManager().user)
+	GetUserManager().User.PersonalCart.AddItem(item, int64(quantityDesired))
+	dbclient.GetUserDBClient().SaveCart(GetUserManager().User)
 }
 
 func (store *Store) RemoveFromCart(item dao.InventoryItem, quantityToRemove int) {
 	dbclient.GetInventoryDBClient().Release(item, int64(quantityToRemove))
-	GetUserManager().user.PersonalCart.RemoveItem(item, int64(quantityToRemove))
-	dbclient.GetUserDBClient().SaveCart(GetUserManager().user)
+	GetUserManager().User.PersonalCart.RemoveItem(item, int64(quantityToRemove))
+	dbclient.GetUserDBClient().SaveCart(GetUserManager().User)
 }

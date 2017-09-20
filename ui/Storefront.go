@@ -1,7 +1,8 @@
-package main
+package ui
 
 import (
 	"Assignment-3/dao"
+	"Assignment-3/manager"
 	"bytes"
 	"fmt"
 	"strconv"
@@ -11,19 +12,19 @@ import (
 	"github.com/abiosoft/ishell"
 )
 
-func addListItemsToShell(shell *ishell.Shell) {
+func AddListItemsToShell(shell *ishell.Shell) {
 	listItemsCmd := &ishell.Cmd{
 		Name:     "list",
 		Help:     "list available items",
 		LongHelp: `List available items by category.`,
 	}
 
-	for _, category := range GetStore().GetCategories() {
+	for _, category := range manager.GetStore().GetCategories() {
 		listItemsCmd.AddCmd(&ishell.Cmd{
 			Name: category.Identifier,
 			Help: category.Description,
 			Func: func(c *ishell.Context) {
-				for _, item := range GetStore().GetItemsInCategory(c.Cmd.Name) {
+				for _, item := range manager.GetStore().GetItemsInCategory(c.Cmd.Name) {
 					c.Printf("%.2f\t%s\n", item.Price, item.Name)
 				}
 			},
@@ -33,7 +34,7 @@ func addListItemsToShell(shell *ishell.Shell) {
 	shell.AddCmd(listItemsCmd)
 }
 
-func addAddItemToCartToShell(shell *ishell.Shell) {
+func AddAddItemToCartToShell(shell *ishell.Shell) {
 	addItemCmd := &ishell.Cmd{
 		Name: "add",
 		Help: "add item to cart",
@@ -41,7 +42,7 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 			c.ShowPrompt(false)
 			defer c.ShowPrompt(true)
 
-			categories := GetStore().GetCategories()
+			categories := manager.GetStore().GetCategories()
 			var categoryDescriptions []string
 			for _, category := range categories {
 				categoryDescriptions = append(categoryDescriptions, category.Description)
@@ -49,7 +50,7 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 			categoryIdx := c.MultiChoice(categoryDescriptions, "Which category do you want to add an item from?")
 			category := categories[categoryIdx]
 
-			items := GetStore().GetItemsInCategory(categories[categoryIdx].Identifier)
+			items := manager.GetStore().GetItemsInCategory(categories[categoryIdx].Identifier)
 			var itemTexts []string
 			for _, item := range items {
 				itemTexts = append(itemTexts, fmt.Sprintf("%s - $%.2f", item.Name, item.Price))
@@ -57,7 +58,7 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 			itemIdx := c.MultiChoice(itemTexts, fmt.Sprintf("Which item do you want to add from the %s category?", category))
 			item := items[itemIdx]
 
-			attributeID1, attributeID2 := GetStore().GetAttributesByCategory(category.Identifier)
+			attributeID1, attributeID2 := manager.GetStore().GetAttributesByCategory(category.Identifier)
 			attribute1 := fmt.Sprintf("%s: %s", attributeID1, item.AttributeOne)
 			attribute2 := fmt.Sprintf("%s: %s", attributeID2, item.AttributeTwo)
 
@@ -67,7 +68,7 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 			quantityDesired, err := strconv.Atoi(c.ReadLine())
 			for {
 				if err == nil && quantityDesired > 0 && int64(quantityDesired) <= item.QuantityAvailable {
-					GetStore().AddToCart(item, quantityDesired)
+					manager.GetStore().AddToCart(item, quantityDesired)
 					break
 				} else if quantityDesired == 0 {
 					break
@@ -84,13 +85,13 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 	shell.AddCmd(addItemCmd)
 }
 
-func addRemoveItemFromCartToShell(shell *ishell.Shell) {
+func AddRemoveItemFromCartToShell(shell *ishell.Shell) {
 	// TODO: Remove isn't working
 	removeItemCmd := &ishell.Cmd{
 		Name: "remove",
 		Help: "remove items from the cart",
 		Func: func(c *ishell.Context) {
-			user := GetUserManager().user
+			user := manager.GetUserManager().User
 			if len(user.PersonalCart.Items) == 0 {
 				c.Println("Cart is currently empty!")
 				return
@@ -110,7 +111,7 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 				if item.Quantity == 1 {
 					itemsToRemove = append(itemsToRemove, item)
 				} else {
-					attributeID1, attributeID2 := GetStore().GetAttributesByCategory(item.Item.Category)
+					attributeID1, attributeID2 := manager.GetStore().GetAttributesByCategory(item.Item.Category)
 					attribute1 := fmt.Sprintf("%s: %s", attributeID1, item.Item.AttributeOne)
 					attribute2 := fmt.Sprintf("%s: %s", attributeID2, item.Item.AttributeTwo)
 
@@ -120,7 +121,7 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 					quantityToRemove, err := strconv.Atoi(c.ReadLine())
 					for {
 						if err == nil && quantityToRemove > 0 && int64(quantityToRemove) <= item.Quantity {
-							GetStore().RemoveFromCart(item.Item, quantityToRemove)
+							manager.GetStore().RemoveFromCart(item.Item, quantityToRemove)
 							break
 						} else if quantityToRemove == 0 {
 							break
@@ -137,24 +138,24 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 	shell.AddCmd(removeItemCmd)
 }
 
-func addDisplayCartToShell(shell *ishell.Shell) {
+func AddDisplayCartToShell(shell *ishell.Shell) {
 	displayCartCmd := &ishell.Cmd{
 		Name: "show",
 		Help: "show items in the cart",
 		Func: func(c *ishell.Context) {
-			c.Print(displayCart(GetUserManager().user.PersonalCart))
+			c.Print(displayCart(manager.GetUserManager().User.PersonalCart))
 		},
 	}
 
 	shell.AddCmd(displayCartCmd)
 }
 
-func addCheckoutToShell(shell *ishell.Shell) {
+func AddCheckoutToShell(shell *ishell.Shell) {
 	checkoutCmd := &ishell.Cmd{
 		Name: "checkout",
 		Help: "Proceed to checkout your stuffs",
 		Func: func(c *ishell.Context) {
-			user := GetUserManager().user
+			user := manager.GetUserManager().User
 			if len(user.PersonalCart.Items) == 0 {
 				c.Println("Cart is currently empty!")
 				return
@@ -184,7 +185,7 @@ func addCheckoutToShell(shell *ishell.Shell) {
 					goto enterAddress
 				}
 				user.Address = newAddress
-				GetUserManager().changeAddress(newAddress)
+				manager.GetUserManager().ChangeAddress(newAddress)
 			}
 			// confirm order
 			buf = bytes.NewBufferString("")
@@ -202,8 +203,8 @@ func addCheckoutToShell(shell *ishell.Shell) {
 			confirmPurchase := c.MultiChoice([]string{"No", "Yes"}, buf.String())
 			if confirmPurchase == 1 {
 				// remove items from inventory and add Purchase to purchase history
-				purchase := GetCashier().createPurchase(user)
-				GetCashier().confirmPurchase(user, &purchase)
+				purchase := manager.GetCashier().CreatePurchase(user)
+				manager.GetCashier().ConfirmPurchase(user, &purchase)
 			}
 
 			// This print ensures the command completes. Something isn't flushing right.
@@ -214,12 +215,12 @@ func addCheckoutToShell(shell *ishell.Shell) {
 	shell.AddCmd(checkoutCmd)
 }
 
-func addPurchaseHistoryToShell(shell *ishell.Shell) {
+func AddPurchaseHistoryToShell(shell *ishell.Shell) {
 	purchaseHistoryCmd := &ishell.Cmd{
 		Name: "purchases",
 		Help: "View purchase history",
 		Func: func(c *ishell.Context) {
-			purchases := GetUserManager().getHistory()
+			purchases := manager.GetUserManager().GetHistory()
 
 			if len(purchases) == 0 {
 				c.Println("You have not made any purchases")
@@ -247,12 +248,12 @@ func addPurchaseHistoryToShell(shell *ishell.Shell) {
 	shell.AddCmd(purchaseHistoryCmd)
 }
 
-func addWhoamiToShell(shell *ishell.Shell) {
+func AddWhoamiToShell(shell *ishell.Shell) {
 	whoamiCmd := &ishell.Cmd{
 		Name: "whoami",
 		Help: "show user information",
 		Func: func(c *ishell.Context) {
-			user := GetUserManager().user
+			user := manager.GetUserManager().User
 			c.Printf("Username: %s\n", user.Username)
 			c.Printf("Card Number: %d\n", user.OscCardNumber)
 			c.Printf("Address: %s\n", user.Address)
@@ -263,7 +264,7 @@ func addWhoamiToShell(shell *ishell.Shell) {
 	shell.AddCmd(whoamiCmd)
 }
 
-func addLogoutToShell(shell *ishell.Shell) {
+func AddLogoutToShell(shell *ishell.Shell) {
 	logoutCmd := &ishell.Cmd{
 		Name: "logout",
 		Help: "logout of user session",
@@ -271,7 +272,7 @@ func addLogoutToShell(shell *ishell.Shell) {
 			c.ShowPrompt(false)
 			defer c.ShowPrompt(true)
 
-			GetUserManager().logOut()
+			manager.GetUserManager().LogOut()
 			c.Stop()
 		},
 	}
@@ -284,7 +285,7 @@ func displayCart(cart *dao.Cart) string {
 	w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
 	fmt.Fprintln(w, "\tItem\t\t\tQuantity\t\tCost Each")
 	for _, cartItem := range cart.Items {
-		attributeID1, attributeID2 := GetStore().GetAttributesByCategory(cartItem.Item.Category)
+		attributeID1, attributeID2 := manager.GetStore().GetAttributesByCategory(cartItem.Item.Category)
 		attribute1 := fmt.Sprintf("%s: %s", attributeID1, cartItem.Item.AttributeOne)
 		attribute2 := fmt.Sprintf("%s: %s", attributeID2, cartItem.Item.AttributeTwo)
 

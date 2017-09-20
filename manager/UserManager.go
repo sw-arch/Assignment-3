@@ -1,4 +1,4 @@
-package main
+package manager
 
 import (
 	"Assignment-3/dao"
@@ -7,7 +7,7 @@ import (
 )
 
 type UserManager struct {
-	user *dao.User
+	User *dao.User
 }
 
 var userManagerInstance *UserManager
@@ -20,21 +20,21 @@ func GetUserManager() *UserManager {
 	return userManagerInstance
 }
 
-func (manager *UserManager) logIn(username string, password string) bool {
+func (manager *UserManager) LogIn(username string, password string) bool {
 	user, success := dbclient.GetUserDBClient().GetUserByUsername(username)
 	if success && user.Password == password {
-		manager.user = &user
+		manager.User = &user
 		return true
 	}
 	return false
 }
 
-func (manager *UserManager) logOut() {
-	manager.user = nil
+func (manager *UserManager) LogOut() {
+	manager.User = nil
 	return
 }
 
-func (manager *UserManager) register(username string, password string, address string) bool {
+func (manager *UserManager) Register(username string, password string, address string) bool {
 	if _, userExists := dbclient.GetUserDBClient().GetUserByUsername(username); userExists {
 		// Username is taken
 		return false
@@ -55,16 +55,16 @@ func (manager *UserManager) register(username string, password string, address s
 	created := dbclient.GetUserDBClient().CreateUser(&user)
 
 	if created {
-		manager.user = &user
+		manager.User = &user
 	}
 
 	return created
 }
 
-func (manager *UserManager) changeAddress(newAddress string) {
-	dbclient.GetUserDBClient().ChangeAddress(manager.user, newAddress)
+func (manager *UserManager) ChangeAddress(newAddress string) {
+	dbclient.GetUserDBClient().ChangeAddress(manager.User, newAddress)
 }
 
-func (manager *UserManager) getHistory() []dao.Purchase {
-	return dbclient.GetPurchaseDBClient().GetPurchasesByUsername(manager.user.Username)
+func (manager *UserManager) GetHistory() []dao.Purchase {
+	return dbclient.GetPurchaseDBClient().GetPurchasesByUsername(manager.User.Username)
 }

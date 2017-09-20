@@ -1,6 +1,9 @@
 package main
 
 import (
+	"Assignment-3/manager"
+	"Assignment-3/ui"
+
 	"github.com/abiosoft/ishell"
 )
 
@@ -10,26 +13,26 @@ func main() {
 
 	loginShell.Println("Welcome to the Store")
 
-	addLoginToShell(loginShell)
-	addRegisterToShell(loginShell)
-	addListItemsToShell(loginShell)
+	ui.AddLoginToShell(loginShell)
+	ui.AddRegisterToShell(loginShell)
+	ui.AddListItemsToShell(loginShell)
 
-	addListItemsToShell(storeShell)
-	addAddItemToCartToShell(storeShell)
-	addRemoveItemFromCartToShell(storeShell)
-	addDisplayCartToShell(storeShell)
-	addCheckoutToShell(storeShell)
-	addPurchaseHistoryToShell(storeShell)
-	addWhoamiToShell(storeShell)
-	addLogoutToShell(storeShell)
+	ui.AddListItemsToShell(storeShell)
+	ui.AddAddItemToCartToShell(storeShell)
+	ui.AddRemoveItemFromCartToShell(storeShell)
+	ui.AddDisplayCartToShell(storeShell)
+	ui.AddCheckoutToShell(storeShell)
+	ui.AddPurchaseHistoryToShell(storeShell)
+	ui.AddWhoamiToShell(storeShell)
+	ui.AddLogoutToShell(storeShell)
 
 login:
 	loginShell.Run()
 
-	if GetUserManager().user != nil {
+	if manager.GetUserManager().User != nil {
 		// user managed to log in successfully. Start the store shell.
 		storeShell.Run()
-		if GetUserManager().user == nil {
+		if manager.GetUserManager().User == nil {
 			// user logged out, restart the login shell.
 			goto login
 		}
