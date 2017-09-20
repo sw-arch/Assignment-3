@@ -27,10 +27,10 @@ INSERT INTO categories (identifier, description, attribute_one, attribute_two)
 VALUES ("books", "Books: includes paperbacks and hardbacks", "isbn", "author");
 
 INSERT INTO categories (identifier, description, attribute_one, attribute_two)
-VALUES ("toys", "Toys: action figures, games, etc.", "age range", "isActionFigure");
+VALUES ("toys", "Toys: action figures, games, etc.", "age range", "is action figure");
 
 INSERT INTO categories (identifier, description, attribute_one, attribute_two)
-VALUES ("house", "Household items: Soaps, towel, dishes, etc.", "room", "isLuxuryItem");
+VALUES ("house", "Household items: Soaps, towel, dishes, etc.", "room", "is luxury item");
 
 INSERT INTO categories (identifier, description, attribute_one, attribute_two)
 VALUES ("elec", "Small electronics: phones, cameras, tablets, game systems, etc.", "brand", "category");
@@ -42,7 +42,7 @@ VALUES ("clothes", "Wearable Apparel: shirts, skirts, pants, boots, heals, etc."
 -- Inventory Items
 
 INSERT INTO inventory (inventory_id, name, description, attribute_one_value, attribute_two_value, category, price, quantity_on_hand, quantity_reserved)
-VALUES ("1d0109ef-ee42-4d0c-ae07-ebceee3e71b5", "Crest toothbrush 2 pack", "two Crest brand toothbrushes", "bathroom", "no", "house", 4.99, 37, 2);
+VALUES ("1d0109ef-ee42-4d0c-ae07-ebceee3e71b5", "Crest toothbrush 2 pack", "two Crest brand toothbrushes", "bathroom", "yes", "house", 4.99, 37, 2);
 
 INSERT INTO inventory (inventory_id, name, description, attribute_one_value, attribute_two_value, category, price, quantity_on_hand, quantity_reserved)
 VALUES ("76bb95be-3513-4009-8999-f54d1d8d9e64", "Batman action figure", "8 inch plastic Batman action figure", "8-10", "yes", "toys", 9.99, 15, 8);
