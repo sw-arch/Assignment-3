@@ -79,7 +79,7 @@ func (client UserDBClient) CreateUser(user *dao.User) bool {
 	return true
 }
 
-func (client UserDBClient) SetCart(user *dao.User) bool {
+func (client UserDBClient) SaveCart(user *dao.User) bool {
 	encodedCart, marshalErr := json.Marshal(user.PersonalCart)
 	checkErr(marshalErr)
 	statement, prepErr := client.db.Prepare("UPDATE users SET cart = ? WHERE username == ?;")

@@ -2,7 +2,6 @@ package main
 
 import (
 	"Assignment-3/dao"
-	"Assignment-3/dbclient"
 	"bytes"
 	"fmt"
 	"strconv"
@@ -19,13 +18,12 @@ func addListItemsToShell(shell *ishell.Shell) {
 		LongHelp: `List available items by category.`,
 	}
 
-	for _, category := range dbclient.GetInventoryDBClient().GetCategoryDescriptions() {
+	for _, category := range GetStore().GetCategories() {
 		listItemsCmd.AddCmd(&ishell.Cmd{
-			Name: category[0],
-			Help: category[1],
+			Name: category.Identifier,
+			Help: category.Description,
 			Func: func(c *ishell.Context) {
-				items := dbclient.GetInventoryDBClient().GetItemsByCategory(c.Cmd.Name)
-				for _, item := range items {
+				for _, item := range GetStore().GetItemsInCategory(c.Cmd.Name) {
 					c.Printf("%.2f\t%s\n", item.Price, item.Name)
 				}
 			},
@@ -43,11 +41,15 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 			c.ShowPrompt(false)
 			defer c.ShowPrompt(true)
 
-			categories := dbclient.GetInventoryDBClient().GetAvailableCategories()
-			categoryIdx := c.MultiChoice(categories, "Which category do you want to add an item from?")
+			categories := GetStore().GetCategories()
+			var categoryDescriptions []string
+			for _, category := range categories {
+				categoryDescriptions = append(categoryDescriptions, category.Description)
+			}
+			categoryIdx := c.MultiChoice(categoryDescriptions, "Which category do you want to add an item from?")
 			category := categories[categoryIdx]
 
-			items := dbclient.GetInventoryDBClient().GetItemsByCategory(category)
+			items := GetStore().GetItemsInCategory(categories[categoryIdx].Identifier)
 			var itemTexts []string
 			for _, item := range items {
 				itemTexts = append(itemTexts, fmt.Sprintf("%s - $%.2f", item.Name, item.Price))
@@ -55,7 +57,7 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 			itemIdx := c.MultiChoice(itemTexts, fmt.Sprintf("Which item do you want to add from the %s category?", category))
 			item := items[itemIdx]
 
-			attributeID1, attributeID2 := dbclient.GetInventoryDBClient().GetAttributesByCategory(category)
+			attributeID1, attributeID2 := GetStore().GetAttributesByCategory(category.Identifier)
 			attribute1 := fmt.Sprintf("%s: %s", attributeID1, item.AttributeOne)
 			attribute2 := fmt.Sprintf("%s: %s", attributeID2, item.AttributeTwo)
 
@@ -65,9 +67,7 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 			quantityDesired, err := strconv.Atoi(c.ReadLine())
 			for {
 				if err == nil && quantityDesired > 0 && int64(quantityDesired) <= item.QuantityAvailable {
-					dbclient.GetInventoryDBClient().Reserve(item, int64(quantityDesired))
-					GetUserManager().user.PersonalCart.AddItem(item, int64(quantityDesired))
-					dbclient.GetUserDBClient().SetCart(GetUserManager().user)
+					GetStore().AddToCart(item, quantityDesired)
 					break
 				} else {
 					c.Printf("Invalid quantity. Choose a number between 1 and %d\n", item.QuantityAvailable)
@@ -108,23 +108,22 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 				if item.Quantity == 1 {
 					itemsToRemove = append(itemsToRemove, item)
 				} else {
-					attributeID1, attributeID2 := dbclient.GetInventoryDBClient().GetAttributesByCategory(item.Item.Category)
+					attributeID1, attributeID2 := GetStore().GetAttributesByCategory(item.Item.Category)
 					attribute1 := fmt.Sprintf("%s: %s", attributeID1, item.Item.AttributeOne)
 					attribute2 := fmt.Sprintf("%s: %s", attributeID2, item.Item.AttributeTwo)
 
-					c.Printf("You selected %s\nDescription:\n\t%s\n\t%s\n\t%s\nThere are %d available. How many would you like to add to your cart?\n",
+					c.Printf("You selected %s\nDescription:\n\t%s\n\t%s\n\t%s\nThere are %d in your cart. How many would you like to remove?\n",
 						item.Item.Name, item.Item.Description, attribute1, attribute2, item.Quantity)
 
-				remove:
 					quantityToRemove, err := strconv.Atoi(c.ReadLine())
-					if err == nil && quantityToRemove > 0 && int64(quantityToRemove) <= item.Quantity {
-						dbclient.GetInventoryDBClient().Release(item.Item, int64(quantityToRemove))
-						user.PersonalCart.RemoveItem(item.Item, int64(quantityToRemove))
-						dbclient.GetUserDBClient().SetCart(GetUserManager().user)
-						c.ReadLine()
-					} else {
-						c.Printf("Invalid quantity. Choose a number between 1 and %d\n", item.Quantity)
-						goto remove
+					for {
+						if err == nil && quantityToRemove > 0 && int64(quantityToRemove) <= item.Quantity {
+							GetStore().RemoveFromCart(item.Item, quantityToRemove)
+							break
+						} else {
+							c.Printf("Invalid quantity. Choose a number between 1 and %d\n", item.Quantity)
+							quantityToRemove, err = strconv.Atoi(c.ReadLine())
+						}
 					}
 				}
 			}
@@ -181,7 +180,7 @@ func addCheckoutToShell(shell *ishell.Shell) {
 					goto enterAddress
 				}
 				user.Address = newAddress
-				dbclient.GetUserDBClient().ChangeAddress(user, newAddress)
+				GetUserManager().changeAddress(newAddress)
 			}
 			// confirm order
 			buf = bytes.NewBufferString("")
@@ -281,7 +280,7 @@ func displayCart(cart *dao.Cart) string {
 	w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', tabwriter.AlignRight)
 	fmt.Fprintln(w, "\tItem\t\t\tQuantity\t\tCost Each")
 	for _, cartItem := range cart.Items {
-		attributeID1, attributeID2 := dbclient.GetInventoryDBClient().GetAttributesByCategory(cartItem.Item.Category)
+		attributeID1, attributeID2 := GetStore().GetAttributesByCategory(cartItem.Item.Category)
 		attribute1 := fmt.Sprintf("%s: %s", attributeID1, cartItem.Item.AttributeOne)
 		attribute2 := fmt.Sprintf("%s: %s", attributeID2, cartItem.Item.AttributeTwo)
 

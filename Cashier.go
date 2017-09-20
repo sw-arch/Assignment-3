@@ -21,7 +21,7 @@ func (cashier *Cashier) confirmPurchase(user *dao.User, purchase *dao.Purchase) 
 	}
 	dbclient.GetPurchaseDBClient().AddPurchase(purchase)
 	user.PersonalCart.EmptyCart()
-	dbclient.GetUserDBClient().SetCart(user)
+	dbclient.GetUserDBClient().SaveCart(user)
 	return true
 }
 

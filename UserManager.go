@@ -34,7 +34,7 @@ func (manager *UserManager) logOut() {
 	return
 }
 
-func (manager UserManager) register(username string, password string, address string) bool {
+func (manager *UserManager) register(username string, password string, address string) bool {
 	if _, userExists := dbclient.GetUserDBClient().GetUserByUsername(username); userExists {
 		// Username is taken
 		return false
@@ -61,6 +61,10 @@ func (manager UserManager) register(username string, password string, address st
 	return created
 }
 
-func (manager UserManager) getHistory() []dao.Purchase {
+func (manager *UserManager) changeAddress(newAddress string) {
+	dbclient.GetUserDBClient().ChangeAddress(manager.user, newAddress)
+}
+
+func (manager *UserManager) getHistory() []dao.Purchase {
 	return dbclient.GetPurchaseDBClient().GetPurchasesByUsername(manager.user.Username)
 }
