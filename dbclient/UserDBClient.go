@@ -70,21 +70,21 @@ func (client UserDBClient) GetUserByOSCNumber(oscnum uint64) (dao.User, bool) {
 }
 
 func (client UserDBClient) CreateUser(user *dao.User) bool {
-	cart, marshalErr := json.Marshal(user.PersonalCart)
+	encodedCart, marshalErr := json.Marshal(user.PersonalCart)
 	checkErr(marshalErr)
 	statement, prepErr := client.db.Prepare("INSERT INTO users (username, password, cart, address, oscnum) VALUES (?, ?, ?, ?, ?);")
 	checkErr(prepErr)
-	_, err := statement.Exec(user.Username, user.Password, cart, user.Address, user.OscCardNumber)
+	_, err := statement.Exec(user.Username, user.Password, encodedCart, user.Address, user.OscCardNumber)
 	checkErr(err)
 	return true
 }
 
 func (client UserDBClient) SetCart(user *dao.User) bool {
-	cart, marshalErr := json.Marshal(user.PersonalCart)
+	encodedCart, marshalErr := json.Marshal(user.PersonalCart)
 	checkErr(marshalErr)
 	statement, prepErr := client.db.Prepare("UPDATE users SET cart = ? WHERE username == ?;")
 	checkErr(prepErr)
-	_, err := statement.Exec(cart, user.Username)
+	_, err := statement.Exec(encodedCart, user.Username)
 	checkErr(err)
 	return true
 }
