@@ -7,9 +7,7 @@ import (
 )
 
 type UserManager struct {
-	userClient     *dbclient.UserDBClient
-	purchaseClient *dbclient.PurchaseDBClient
-	user           *dao.User
+	user *dao.User
 }
 
 var userManagerInstance *UserManager
@@ -17,15 +15,13 @@ var userManagerInstance *UserManager
 func GetUserManager() *UserManager {
 	if userManagerInstance == nil {
 		userManagerInstance = &UserManager{
-			dbclient.GetUserDBClient(),
-			dbclient.GetPurchaseDBClient(),
 			nil}
 	}
 	return userManagerInstance
 }
 
 func (manager *UserManager) logIn(username string, password string) bool {
-	user, success := manager.userClient.GetUserByUsername(username)
+	user, success := dbclient.GetUserDBClient().GetUserByUsername(username)
 	if success && user.Password == password {
 		manager.user = &user
 		return true
@@ -39,14 +35,14 @@ func (manager *UserManager) logOut() {
 }
 
 func (manager UserManager) register(username string, password string, address string) bool {
-	if _, userExists := manager.userClient.GetUserByUsername(username); userExists {
+	if _, userExists := dbclient.GetUserDBClient().GetUserByUsername(username); userExists {
 		// Username is taken
 		return false
 	}
 
 	cardNumber := uint64(rand.Intn(9999999999))
 
-	for _, userExists := manager.userClient.GetUserByOSCNumber(cardNumber); userExists; _, userExists = manager.userClient.GetUserByOSCNumber(cardNumber) {
+	for _, userExists := dbclient.GetUserDBClient().GetUserByOSCNumber(cardNumber); userExists; _, userExists = dbclient.GetUserDBClient().GetUserByOSCNumber(cardNumber) {
 		cardNumber = uint64(rand.Intn(9999999999))
 	}
 
@@ -56,7 +52,7 @@ func (manager UserManager) register(username string, password string, address st
 		&dao.Cart{},
 		address,
 		cardNumber}
-	created := manager.userClient.CreateUser(&user)
+	created := dbclient.GetUserDBClient().CreateUser(&user)
 
 	if created {
 		manager.user = &user
@@ -65,6 +61,6 @@ func (manager UserManager) register(username string, password string, address st
 	return created
 }
 
-func (manager UserManager) getHistory(user dao.User) []dao.Purchase {
-	return []dao.Purchase{}
+func (manager UserManager) getHistory() []dao.Purchase {
+	return dbclient.GetPurchaseDBClient().GetPurchasesByUsername(manager.user.Username)
 }

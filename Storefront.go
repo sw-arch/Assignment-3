@@ -8,9 +8,6 @@ import (
 	"os"
 	"strconv"
 	"text/tabwriter"
-	"time"
-
-	"github.com/satori/go.uuid"
 
 	"github.com/abiosoft/ishell"
 )
@@ -194,14 +191,8 @@ func addCheckoutToShell(shell *ishell.Shell) {
 			confirmPurchase := c.MultiChoice([]string{"No", "Yes"}, buf.String())
 			if confirmPurchase == 1 {
 				// remove items from inventory and add Purchase to purchase history
-				purchase := dao.Purchase{uuid.NewV4(), time.Now(), user.Username, user.Address, user.OscCardNumber, user.PersonalCart.GetTotalCost(), user.PersonalCart}
-
-				for _, cartItem := range user.PersonalCart.Items {
-					dbclient.GetInventoryDBClient().Remove(cartItem.Item, cartItem.Quantity)
-				}
-				dbclient.GetPurchaseDBClient().AddPurchase(&purchase)
-				user.PersonalCart.EmptyCart()
-				dbclient.GetUserDBClient().SetCart(user)
+				purchase := GetCashier().createPurchase(user)
+				GetCashier().confirmPurchase(user, &purchase)
 			}
 
 			// This print ensures the command completes. Something isn't flushing right.
@@ -217,7 +208,7 @@ func addPurchaseHistoryToShell(shell *ishell.Shell) {
 		Name: "purchases",
 		Help: "View purchase history",
 		Func: func(c *ishell.Context) {
-			purchases := dbclient.GetPurchaseDBClient().GetPurchasesByUsername(GetUserManager().user.Username)
+			purchases := GetUserManager().getHistory()
 
 			if len(purchases) == 0 {
 				c.Println("You have not made any purchases")
