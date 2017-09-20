@@ -66,7 +66,7 @@ func addAddItemToCartToShell(shell *ishell.Shell) {
 
 			quantityDesired, err := strconv.Atoi(c.ReadLine())
 			for {
-				if err == nil && quantityDesired > 0 && int64(quantityDesired) <= item.QuantityAvailable {
+				if err == nil && quantityDesired >= 0 && int64(quantityDesired) <= item.QuantityAvailable {
 					GetStore().AddToCart(item, quantityDesired)
 					break
 				} else {
@@ -117,7 +117,7 @@ func addRemoveItemFromCartToShell(shell *ishell.Shell) {
 
 					quantityToRemove, err := strconv.Atoi(c.ReadLine())
 					for {
-						if err == nil && quantityToRemove > 0 && int64(quantityToRemove) <= item.Quantity {
+						if err == nil && quantityToRemove >= 0 && int64(quantityToRemove) <= item.Quantity {
 							GetStore().RemoveFromCart(item.Item, quantityToRemove)
 							break
 						} else {
