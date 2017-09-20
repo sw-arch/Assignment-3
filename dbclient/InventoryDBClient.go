@@ -169,7 +169,7 @@ func makeInventoryItemFromRow(row *sql.Row) dao.InventoryItem {
 	item := dao.InventoryItem{}
 	var quantityOnHand int64
 	var quantityReserved int64
-	rowErr := row.Scan(&item.Id, &item.Name, &item.Description, &item.Category, &item.Price, &quantityOnHand, &quantityReserved)
+	rowErr := row.Scan(&item.Id, &item.Name, &item.Description, &item.Category, &item.AttributeOne, &item.AttributeTwo, &item.Price, &quantityOnHand, &quantityReserved)
 	checkErr(rowErr)
 	item.QuantityAvailable = quantityOnHand
 	return item
@@ -181,7 +181,7 @@ func makeInventoryItemsFromRows(rows *sql.Rows) []dao.InventoryItem {
 		item := dao.InventoryItem{}
 		var quantityOnHand int64
 		var quantityReserved int64
-		rowErr := rows.Scan(&item.Id, &item.Name, &item.Description, &item.Category, &item.Price, &quantityOnHand, &quantityReserved)
+		rowErr := rows.Scan(&item.Id, &item.Name, &item.Description, &item.Category, &item.AttributeOne, &item.AttributeTwo, &item.Price, &quantityOnHand, &quantityReserved)
 		checkErr(rowErr)
 		item.QuantityAvailable = quantityOnHand
 		items = append(items, item)
