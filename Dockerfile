@@ -9,6 +9,7 @@ RUN go-wrapper download
 RUN go-wrapper install
 
 RUN sqlite3 inventory.db<initialDBTables/inventory.txt && \
-    sqlite3 users.db<initialDBTables/users.txt
+    sqlite3 users.db<initialDBTables/users.txt && \
+    sqlite3 purchase.db<initialDBTables/purchase.txt
 
 CMD ["go-wrapper", "run"]

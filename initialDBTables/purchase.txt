@@ -1,0 +1,15 @@
+-- Table Creation
+
+CREATE TABLE purchase (
+    id Text PRIMARY KEY,
+    checkoutdate Text,
+    username Text,
+    address Text,
+    oscnum Integer,
+    total Real,
+    cart Blob
+);
+
+INSERT INTO purchase VALUES ("3371d4f0-d7c6-4305-8d0d-06f6bc216c1c", "Wed, 20 Sep 2017 20:33:49 CDT", "TestUser", "123 Test Ave", 1234567890, 160.92, '{"Items":[{"Item":{"Id":"1b7791b4-388c-4531-a854-1e4c7e4e34e2","Name":"Fedora","Description":"now you can look cool","Category":"clothes","AttributeOne":"uni-sex","AttributeTwo":"hat","Price":25.99,"QuantityAvailable":7},"Quantity":1},{"Item":{"Id":"2a8796db-f864-4e91-9527-7e0dae2d7509","Name":"Ravens Gate","Description":"novel by Anthony Horowitz","Category":"books","AttributeOne":"IBN-ASKHDF12375","AttributeTwo":"Anthony Horowitz","Price":14.99,"QuantityAvailable":26},"Quantity":1},{"Item":{"Id":"2a988ea6-f0f8-4aec-b956-81c997c5d334","Name":"Curtain set","Description":"beige living room curtains","Category":"house","AttributeOne":"den","AttributeTwo":"yes","Price":19.99,"QuantityAvailable":22},"Quantity":6}]}');
+
+INSERT INTO purchase VALUES ("b6b79c87-0104-468f-951e-1d403c92fcee", "Wed, 20 Sep 2017 20:33:49 CDT", "TestUser", "123 Test Ave", 1234567890, 29.95, '{"Items":[{"Item":{"Id":"1d0109ef-ee42-4d0c-ae07-ebceee3e71b5","Name":"Crest toothbrush 2 pack","Description":"two Crest brand toothbrushes","Category":"house","AttributeOne":"bathroom","AttributeTwo":"yes","Price":4.99,"QuantityAvailable":36},"Quantity":4},{"Item":{"Id":"76bb95be-3513-4009-8999-f54d1d8d9e64","Name":"Batman action figure","Description":"8 inch plastic Batman action figure","Category":"toys","AttributeOne":"8-10","AttributeTwo":"yes","Price":9.99,"QuantityAvailable":7},"Quantity":1}]}');
