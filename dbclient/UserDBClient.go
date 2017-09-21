@@ -4,7 +4,6 @@ import (
 	"Assignment-3/dao"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -65,7 +64,6 @@ func (client UserDBClient) GetUserByOSCNumber(oscnum uint64) (dao.User, bool) {
 
 	user.PersonalCart = &cart
 
-	fmt.Printf("found user %s with osc number %d with cart %s\n", user.Username, user.OscCardNumber, cartEncoded)
 	return user, true
 }
 

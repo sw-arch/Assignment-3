@@ -86,7 +86,6 @@ func AddAddItemToCartToShell(shell *ishell.Shell) {
 }
 
 func AddRemoveItemFromCartToShell(shell *ishell.Shell) {
-	// TODO: Remove isn't working
 	removeItemCmd := &ishell.Cmd{
 		Name: "remove",
 		Help: "remove items from the cart",
@@ -96,7 +95,6 @@ func AddRemoveItemFromCartToShell(shell *ishell.Shell) {
 				c.Println("Cart is currently empty!")
 				return
 			}
-			var itemsToRemove []dao.CartItem
 
 			items := user.PersonalCart.Items
 			var itemTexts []string
@@ -104,12 +102,12 @@ func AddRemoveItemFromCartToShell(shell *ishell.Shell) {
 				itemTexts = append(itemTexts, item.Item.Name)
 			}
 
-			itemIdxs := c.Checklist(itemTexts,
-				"Which items do you want to remove?", nil)
-			for itemIdx := range itemIdxs {
+			itemIdxs := c.Checklist(itemTexts, "Which items do you want to remove?", nil)
+			for _, itemIdx := range itemIdxs {
 				item := items[itemIdx]
 				if item.Quantity == 1 {
-					itemsToRemove = append(itemsToRemove, item)
+					c.Printf("Removing %s\n", item.Item.Name)
+					manager.GetStore().RemoveFromCart(item.Item, 1)
 				} else {
 					attributeID1, attributeID2 := manager.GetStore().GetAttributesByCategory(item.Item.Category)
 					attribute1 := fmt.Sprintf("%s: %s", attributeID1, item.Item.AttributeOne)
