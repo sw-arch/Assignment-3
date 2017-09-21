@@ -255,7 +255,6 @@ func AddWhoamiToShell(shell *ishell.Shell) {
 			c.Printf("Username: %s\n", user.Username)
 			c.Printf("Card Number: %d\n", user.OscCardNumber)
 			c.Printf("Address: %s\n", user.Address)
-			c.Printf("Cart: %s\n", user.PersonalCart)
 		},
 	}
 
