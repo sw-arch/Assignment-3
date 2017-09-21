@@ -1,6 +1,6 @@
 FROM golang
 
-RUN apt-get update && apt-get install sqlite3
+RUN apt-get update && apt-get install -y sqlite3 less
 
 WORKDIR /go/src/Assignment-3
 COPY . .
